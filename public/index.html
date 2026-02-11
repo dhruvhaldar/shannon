@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shannon Mission Control</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Shannon Mission Control</h1>
+            <p>Virtual Ground Station & Operations Center</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="panel" id="link-budget-panel">
+                <h2>Link Budget Calculator</h2>
+                <form id="link-budget-form">
+                    <label>Frequency (Hz): <input type="number" id="freq" value="2400000000"></label>
+                    <label>Distance (km): <input type="number" id="dist" value="600"></label>
+                    <label>Tx Power (dBm): <input type="number" id="tx_pwr" value="30"></label>
+                    <label>Tx Cable Loss (dB): <input type="number" id="tx_loss" value="1"></label>
+                    <label>Tx Antenna Gain (dBi): <input type="number" id="tx_gain" value="0"></label>
+                    <label>Atmosphere Loss (dB): <input type="number" id="atm_loss" value="0.5"></label>
+                    <label>Rx Antenna Gain (dBi): <input type="number" id="rx_gain" value="15"></label>
+                    <label>Rx Noise Temp (K): <input type="number" id="rx_temp" value="150"></label>
+                    <label>Data Rate (bps): <input type="number" id="rate" value="9600"></label>
+                    <label>Req. Eb/N0 (dB): <input type="number" id="req_ebno" value="10"></label>
+                    <button type="submit">Calculate Margin</button>
+                </form>
+                <div id="link-result"></div>
+            </div>
+
+            <div class="panel" id="pass-predict-panel">
+                <h2>Pass Prediction</h2>
+                <form id="pass-form">
+                    <label>TLE Line 1: <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995"></label>
+                    <label>TLE Line 2: <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519"></label>
+                    <label>Lat: <input type="number" id="lat" value="59.3498"></label>
+                    <label>Lon: <input type="number" id="lon" value="18.0707"></label>
+                    <label>Alt (m): <input type="number" id="alt" value="10"></label>
+                    <button type="submit">Predict Next Pass</button>
+                </form>
+                <div id="skyplot"></div>
+            </div>
+
+            <div class="panel" id="iq-panel">
+                <h2>IQ Constellation</h2>
+                <form id="iq-form">
+                    <label>Scheme:
+                        <select id="scheme">
+                            <option value="BPSK">BPSK</option>
+                            <option value="QPSK">QPSK</option>
+                            <option value="16-QAM">16-QAM</option>
+                        </select>
+                    </label>
+                    <label>SNR (dB): <input type="number" id="snr" value="15"></label>
+                    <button type="submit">Visualize</button>
+                </form>
+                <canvas id="iq-canvas" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <script src="skyplot.js"></script>
+    <script src="constellations.js"></script>
+    <script>
+        // Link Budget Form Handler
+        document.getElementById('link-budget-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                frequency: parseFloat(document.getElementById('freq').value),
+                distance_km: parseFloat(document.getElementById('dist').value),
+                tx_power_dbm: parseFloat(document.getElementById('tx_pwr').value),
+                tx_cable_loss: parseFloat(document.getElementById('tx_loss').value),
+                tx_antenna_gain: parseFloat(document.getElementById('tx_gain').value),
+                atmosphere_loss: parseFloat(document.getElementById('atm_loss').value),
+                rx_antenna_gain: parseFloat(document.getElementById('rx_gain').value),
+                rx_noise_temp: parseFloat(document.getElementById('rx_temp').value),
+                data_rate: parseFloat(document.getElementById('rate').value),
+                required_eb_no: parseFloat(document.getElementById('req_ebno').value)
+            };
+
+            const res = await fetch('/calculate-link-budget', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+
+            let html = `<h3>Margin: ${result.margin_db.toFixed(2)} dB</h3><ul>`;
+            result.losses.forEach(l => {
+                html += `<li>${l[0]}: ${l[1].toFixed(2)} dB</li>`;
+            });
+            html += '</ul>';
+            document.getElementById('link-result').innerHTML = html;
+        });
+
+        // Pass Prediction Form Handler
+        document.getElementById('pass-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                tle_line1: document.getElementById('tle1').value,
+                tle_line2: document.getElementById('tle2').value,
+                lat: parseFloat(document.getElementById('lat').value),
+                lon: parseFloat(document.getElementById('lon').value),
+                alt: parseFloat(document.getElementById('alt').value)
+            };
+
+            const res = await fetch('/predict-pass', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+
+            if(result.message) {
+                document.getElementById('skyplot').innerText = result.message;
+            } else {
+                document.getElementById('skyplot').innerHTML = ''; // Clear
+                drawSkyplot(result.points);
+                const info = document.createElement('div');
+                info.innerHTML = `<p>AOS: ${result.aos}</p><p>LOS: ${result.los}</p><p>Max El: ${result.max_el.toFixed(2)}</p>`;
+                document.getElementById('skyplot').appendChild(info);
+            }
+        });
+
+        // IQ Form Handler
+        document.getElementById('iq-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                scheme: document.getElementById('scheme').value,
+                snr_db: parseFloat(document.getElementById('snr').value)
+            };
+
+            const res = await fetch('/generate-iq', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+
+            if(result.iq_data) {
+                drawConstellation(result.iq_data);
+            } else {
+                alert(result.error);
+            }
+        });
+    </script>
+</body>
+</html>

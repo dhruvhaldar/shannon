@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+numpy
+scipy
+sgp4
+matplotlib
+pydantic
+requests
+pytest
