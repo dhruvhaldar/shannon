@@ -33,8 +33,12 @@ class GroundStation:
         """
         Computes Azimuth and Elevation from the ground station to the satellite.
         satellite_eci: [x, y, z] in km (TEME/ECI frame)
-        time: datetime object
+        time: datetime object or list/array of datetime objects
         """
+        # Ensure input is numpy array if list
+        if isinstance(satellite_eci, list):
+            satellite_eci = np.array(satellite_eci)
+
         # Convert satellite ECI to ECEF
         # This requires GMST calculation
 
@@ -43,7 +47,12 @@ class GroundStation:
 
         # Vector from station to satellite in ECEF
         rx_vec = sat_ecef - self.location
-        range_km = np.linalg.norm(rx_vec)
+
+        # Calculate range
+        if rx_vec.ndim == 1:
+            range_km = np.linalg.norm(rx_vec)
+        else:
+            range_km = np.linalg.norm(rx_vec, axis=1)
 
         # Convert to Topocentric Horizon (SEZ) system
         # We need to rotate from ECEF to SEZ (South-East-Zenith) or ENU (East-North-Up)
@@ -57,7 +66,10 @@ class GroundStation:
         sin_lon = math.sin(lon_rad)
         cos_lon = math.cos(lon_rad)
 
-        dx, dy, dz = rx_vec
+        if rx_vec.ndim == 1:
+            dx, dy, dz = rx_vec
+        else:
+            dx, dy, dz = rx_vec[:, 0], rx_vec[:, 1], rx_vec[:, 2]
 
         # ENU transformation matrix
         # E = -sin_lon * dx + cos_lon * dy
@@ -70,33 +82,64 @@ class GroundStation:
 
         # Calculate Az/El
         # Azimuth is measured clockwise from North
-        az = math.degrees(math.atan2(e, n))
-        if az < 0:
-            az += 360.0
+        az = np.degrees(np.arctan2(e, n))
 
-        el = math.degrees(math.asin(u / range_km))
+        # Handle negative azimuths
+        # np.where works for arrays, standard if/else for scalars
+        if np.ndim(az) == 0:
+            if az < 0:
+                az += 360.0
+        else:
+            az = np.where(az < 0, az + 360.0, az)
+
+        el = np.degrees(np.arcsin(u / range_km))
 
         return az, el, range_km
 
     def _calculate_gmst(self, time):
         """Calculates Greenwich Mean Sidereal Time."""
-        # JD calculation
-        jd, fr = jday(time.year, time.month, time.day, time.hour, time.minute, time.second + time.microsecond * 1e-6)
+        if isinstance(time, (list, np.ndarray)):
+            # Vectorized path
+            # Assume array of datetime objects
+            # We need to extract components efficiently
+            # List comprehension is fastest way to unpack datetime objects in python
+            # unless we convert to pandas datetime index (heavy dependency)
+
+            ts = np.array(time) if isinstance(time, list) else time
+
+            years = np.array([t.year for t in ts])
+            months = np.array([t.month for t in ts])
+            days = np.array([t.day for t in ts])
+            hours = np.array([t.hour for t in ts])
+            minutes = np.array([t.minute for t in ts])
+            seconds = np.array([t.second + t.microsecond * 1e-6 for t in ts])
+
+            jd, fr = jday(years, months, days, hours, minutes, seconds)
+        else:
+            # Scalar path
+            jd, fr = jday(time.year, time.month, time.day, time.hour, time.minute, time.second + time.microsecond * 1e-6)
 
         # GMST approximation
         t_ut1 = jd + fr - 2451545.0
         gmst = 280.46061837 + 360.98564736629 * t_ut1
         gmst %= 360.0
-        return math.radians(gmst)
+        return np.radians(gmst)
 
     def _eci_to_ecef(self, eci, gmst):
         """Rotates ECI vector to ECEF using GMST."""
-        x, y, z = eci
-        cos_g = math.cos(gmst)
-        sin_g = math.sin(gmst)
+        if eci.ndim == 1:
+            x, y, z = eci
+        else:
+            x, y, z = eci[:, 0], eci[:, 1], eci[:, 2]
+
+        cos_g = np.cos(gmst)
+        sin_g = np.sin(gmst)
 
         x_ecef = x * cos_g + y * sin_g
         y_ecef = -x * sin_g + y * cos_g
         z_ecef = z
 
-        return np.array([x_ecef, y_ecef, z_ecef])
+        if eci.ndim == 1:
+            return np.array([x_ecef, y_ecef, z_ecef])
+        else:
+            return np.stack([x_ecef, y_ecef, z_ecef], axis=1)
