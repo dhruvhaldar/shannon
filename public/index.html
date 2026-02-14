@@ -30,7 +30,7 @@
                     <label>Req. Eb/N0 (dB): <input type="number" id="req_ebno" value="10"></label>
                     <button type="submit">Calculate Margin</button>
                 </form>
-                <div id="link-result"></div>
+                <div id="link-result" aria-live="polite"></div>
             </div>
 
             <div class="panel" id="pass-predict-panel">
@@ -43,7 +43,7 @@
                     <label>Alt (m): <input type="number" id="alt" value="10"></label>
                     <button type="submit">Predict Next Pass</button>
                 </form>
-                <div id="skyplot"></div>
+                <div id="skyplot" aria-live="polite"></div>
             </div>
 
             <div class="panel" id="iq-panel">
@@ -60,6 +60,7 @@
                     <button type="submit">Visualize</button>
                 </form>
                 <canvas id="iq-canvas" width="300" height="300"></canvas>
+                <p id="iq-status" aria-live="polite" style="margin-top: 10px; font-weight: bold; text-align: center;"></p>
             </div>
         </div>
     </div>
@@ -69,82 +70,123 @@
         // Link Budget Form Handler
         document.getElementById('link-budget-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = {
-                frequency: parseFloat(document.getElementById('freq').value),
-                distance_km: parseFloat(document.getElementById('dist').value),
-                tx_power_dbm: parseFloat(document.getElementById('tx_pwr').value),
-                tx_cable_loss: parseFloat(document.getElementById('tx_loss').value),
-                tx_antenna_gain: parseFloat(document.getElementById('tx_gain').value),
-                atmosphere_loss: parseFloat(document.getElementById('atm_loss').value),
-                rx_antenna_gain: parseFloat(document.getElementById('rx_gain').value),
-                rx_noise_temp: parseFloat(document.getElementById('rx_temp').value),
-                data_rate: parseFloat(document.getElementById('rate').value),
-                required_eb_no: parseFloat(document.getElementById('req_ebno').value)
-            };
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Calculating...';
 
-            const res = await fetch('/calculate-link-budget', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
-            const result = await res.json();
+            try {
+                const data = {
+                    frequency: parseFloat(document.getElementById('freq').value),
+                    distance_km: parseFloat(document.getElementById('dist').value),
+                    tx_power_dbm: parseFloat(document.getElementById('tx_pwr').value),
+                    tx_cable_loss: parseFloat(document.getElementById('tx_loss').value),
+                    tx_antenna_gain: parseFloat(document.getElementById('tx_gain').value),
+                    atmosphere_loss: parseFloat(document.getElementById('atm_loss').value),
+                    rx_antenna_gain: parseFloat(document.getElementById('rx_gain').value),
+                    rx_noise_temp: parseFloat(document.getElementById('rx_temp').value),
+                    data_rate: parseFloat(document.getElementById('rate').value),
+                    required_eb_no: parseFloat(document.getElementById('req_ebno').value)
+                };
 
-            let html = `<h3>Margin: ${result.margin_db.toFixed(2)} dB</h3><ul>`;
-            result.losses.forEach(l => {
-                html += `<li>${l[0]}: ${l[1].toFixed(2)} dB</li>`;
-            });
-            html += '</ul>';
-            document.getElementById('link-result').innerHTML = html;
+                const res = await fetch('/calculate-link-budget', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+
+                let html = `<h3>Margin: ${result.margin_db.toFixed(2)} dB</h3><ul>`;
+                result.losses.forEach(l => {
+                    html += `<li>${l[0]}: ${l[1].toFixed(2)} dB</li>`;
+                });
+                html += '</ul>';
+                document.getElementById('link-result').innerHTML = html;
+            } catch (err) {
+                console.error(err);
+                document.getElementById('link-result').innerHTML = '<p style="color:red">Error calculating link budget.</p>';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
         });
 
         // Pass Prediction Form Handler
         document.getElementById('pass-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = {
-                tle_line1: document.getElementById('tle1').value,
-                tle_line2: document.getElementById('tle2').value,
-                lat: parseFloat(document.getElementById('lat').value),
-                lon: parseFloat(document.getElementById('lon').value),
-                alt: parseFloat(document.getElementById('alt').value)
-            };
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Predicting...';
 
-            const res = await fetch('/predict-pass', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
-            const result = await res.json();
+            try {
+                const data = {
+                    tle_line1: document.getElementById('tle1').value,
+                    tle_line2: document.getElementById('tle2').value,
+                    lat: parseFloat(document.getElementById('lat').value),
+                    lon: parseFloat(document.getElementById('lon').value),
+                    alt: parseFloat(document.getElementById('alt').value)
+                };
 
-            if(result.message) {
-                document.getElementById('skyplot').innerText = result.message;
-            } else {
-                document.getElementById('skyplot').innerHTML = ''; // Clear
-                drawSkyplot(result.points);
-                const info = document.createElement('div');
-                info.innerHTML = `<p>AOS: ${result.aos}</p><p>LOS: ${result.los}</p><p>Max El: ${result.max_el.toFixed(2)}</p>`;
-                document.getElementById('skyplot').appendChild(info);
+                const res = await fetch('/predict-pass', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+
+                if(result.message) {
+                    document.getElementById('skyplot').innerText = result.message;
+                } else {
+                    document.getElementById('skyplot').innerHTML = ''; // Clear
+                    drawSkyplot(result.points);
+                    const info = document.createElement('div');
+                    info.innerHTML = `<p>AOS: ${result.aos}</p><p>LOS: ${result.los}</p><p>Max El: ${result.max_el.toFixed(2)}</p>`;
+                    document.getElementById('skyplot').appendChild(info);
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('skyplot').innerText = 'Error predicting pass.';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
             }
         });
 
         // IQ Form Handler
         document.getElementById('iq-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = {
-                scheme: document.getElementById('scheme').value,
-                snr_db: parseFloat(document.getElementById('snr').value)
-            };
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Visualizing...';
+            document.getElementById('iq-status').innerText = '';
 
-            const res = await fetch('/generate-iq', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
-            const result = await res.json();
+            try {
+                const data = {
+                    scheme: document.getElementById('scheme').value,
+                    snr_db: parseFloat(document.getElementById('snr').value)
+                };
 
-            if(result.iq_data) {
-                drawConstellation(result.iq_data);
-            } else {
-                alert(result.error);
+                const res = await fetch('/generate-iq', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+
+                if(result.iq_data) {
+                    drawConstellation(result.iq_data);
+                    document.getElementById('iq-status').innerText = 'Constellation updated.';
+                } else {
+                    document.getElementById('iq-status').innerText = 'Error: ' + result.error;
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('iq-status').innerText = 'Error visualizing constellation.';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
             }
         });
     </script>
