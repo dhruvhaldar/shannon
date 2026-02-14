@@ -14,56 +14,88 @@ class PassPredictor:
         if start_time is None:
             start_time = datetime.datetime.utcnow()
 
-        # Simplified pass prediction (brute force for now, can be optimized)
-        # Check every 30 seconds for performance
-        step = datetime.timedelta(seconds=30)
-        current_time = start_time
-        end_time = start_time + datetime.timedelta(hours=max_duration_hours)
+        step_seconds = 30
+        duration_seconds = int(max_duration_hours * 3600)
+        num_steps = duration_seconds // step_seconds
 
-        aos = None
-        los = None
-        max_el = 0.0
+        if num_steps <= 0:
+            return None
+
+        # Create time array
+        times = [start_time + datetime.timedelta(seconds=step_seconds * i) for i in range(num_steps)]
+        times_arr = np.array(times)
+
+        # Calculate JD for SGP4
+        # We need to extract components efficiently
+        years = np.array([t.year for t in times])
+        months = np.array([t.month for t in times])
+        days = np.array([t.day for t in times])
+        hours = np.array([t.hour for t in times])
+        minutes = np.array([t.minute for t in times])
+        seconds = np.array([t.second + t.microsecond * 1e-6 for t in times])
+
+        jd_arr, fr_arr = jday(years, months, days, hours, minutes, seconds)
+
+        # Vectorized SGP4 propagation
+        e, r, v = self.satellite.sgp4_array(jd_arr, fr_arr)
+
+        # Handle errors (e != 0)
+        valid_sgp4 = (e == 0)
+
+        # Vectorized look angles computation
+        # Pass all points, filter later
+        az, el, range_km = ground_station.compute_look_angles(r, times_arr)
+
+        # Create mask for valid pass points:
+        # 1. SGP4 was successful
+        # 2. Elevation > 0
+        mask = valid_sgp4 & (el > 0)
+
+        if not np.any(mask):
+            return None
+
+        valid_indices = np.where(mask)[0]
+
+        # Find the first continuous block of indices
+        diff = np.diff(valid_indices)
+        gaps = np.where(diff > 1)[0]
+
+        if len(gaps) == 0:
+            # Only one pass found in the window (or it's continuous)
+            pass_indices = valid_indices
+        else:
+            # Multiple passes found, take the first one
+            end_idx_in_valid = gaps[0]
+            pass_indices = valid_indices[:end_idx_in_valid + 1]
+
+        # Extract pass data
+        aos_idx = pass_indices[0]
+        los_idx = pass_indices[-1]
+
+        aos = times[aos_idx]
+        # Match iterative behavior: LOS is the time step *after* the last visible point
+        # In the iterative loop, LOS was set when el <= 0.
+        # Here los_idx is the last point where el > 0.
+        # So the actual LOS event happens between times[los_idx] and times[los_idx+1].
+        # The previous code returned the time of the first non-visible point.
+        if los_idx + 1 < len(times):
+            los = times[los_idx + 1]
+        else:
+             # If pass goes to the end of the window, we estimate LOS as one step after
+            los = times[los_idx] + datetime.timedelta(seconds=step_seconds)
+
+        max_el = np.max(el[pass_indices])
+
         pass_points = []
+        for i in pass_indices:
+            pass_points.append({
+                'time': times[i],
+                'az': float(az[i]),
+                'el': float(el[i]),
+                'range_km': float(range_km[i])
+            })
 
-        # First, fast forward to find AOS
-        # This is a naive implementation. SGP4 propagation is fast enough for 24h usually.
-
-        while current_time < end_time:
-            # We need to compute position
-            jd, fr = self.get_julian_date(current_time)
-            e, r, v = self.satellite.sgp4(jd, fr)
-
-            if e != 0:
-                # Error in propagation
-                current_time += step
-                continue
-
-            # Convert ECI to Az/El relative to ground station
-            az, el, range_km = ground_station.compute_look_angles(r, current_time)
-
-            if el > 0: # Above horizon
-                if aos is None:
-                    aos = current_time
-                    # Backtrack slightly to find exact AOS?
-                    # For this prototype, the step granularity is enough.
-
-                max_el = max(max_el, el)
-                pass_points.append({
-                    'time': current_time,
-                    'az': az,
-                    'el': el,
-                    'range_km': range_km
-                })
-            else:
-                if aos is not None:
-                    los = current_time
-                    break # Pass ended
-
-            current_time += step
-
-        if aos and los:
-            return PassData(aos, los, max_el, pass_points)
-        return None
+        return PassData(aos, los, max_el, pass_points)
 
     def get_julian_date(self, t):
         return jday(t.year, t.month, t.day, t.hour, t.minute, t.second + t.microsecond * 1e-6)
