@@ -73,7 +73,8 @@
             const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.innerText;
             btn.disabled = true;
-            btn.innerText = 'Calculating...';
+            btn.setAttribute('aria-busy', 'true');
+            btn.innerHTML = '<span class="spinner"></span> Calculating...';
 
             try {
                 const data = {
@@ -107,6 +108,7 @@
                 document.getElementById('link-result').innerHTML = '<p style="color:red">Error calculating link budget.</p>';
             } finally {
                 btn.disabled = false;
+                btn.removeAttribute('aria-busy');
                 btn.innerText = originalText;
             }
         });
@@ -117,7 +119,8 @@
             const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.innerText;
             btn.disabled = true;
-            btn.innerText = 'Predicting...';
+            btn.setAttribute('aria-busy', 'true');
+            btn.innerHTML = '<span class="spinner"></span> Predicting...';
 
             try {
                 const data = {
@@ -149,6 +152,7 @@
                 document.getElementById('skyplot').innerText = 'Error predicting pass.';
             } finally {
                 btn.disabled = false;
+                btn.removeAttribute('aria-busy');
                 btn.innerText = originalText;
             }
         });
@@ -159,7 +163,8 @@
             const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.innerText;
             btn.disabled = true;
-            btn.innerText = 'Visualizing...';
+            btn.setAttribute('aria-busy', 'true');
+            btn.innerHTML = '<span class="spinner"></span> Visualizing...';
             document.getElementById('iq-status').innerText = '';
 
             try {
@@ -186,6 +191,7 @@
                 document.getElementById('iq-status').innerText = 'Error visualizing constellation.';
             } finally {
                 btn.disabled = false;
+                btn.removeAttribute('aria-busy');
                 btn.innerText = originalText;
             }
         });
