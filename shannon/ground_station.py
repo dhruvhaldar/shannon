@@ -29,11 +29,12 @@ class GroundStation:
 
         return np.array([x, y, z]) # km
 
-    def compute_look_angles(self, satellite_eci, time):
+    def compute_look_angles(self, satellite_eci, time, jd=None, fr=None):
         """
         Computes Azimuth and Elevation from the ground station to the satellite.
         satellite_eci: [x, y, z] in km (TEME/ECI frame)
         time: datetime object or list/array of datetime objects
+        jd, fr: Optional pre-calculated Julian Date components (to avoid re-calculation)
         """
         # Ensure input is numpy array if list
         if isinstance(satellite_eci, list):
@@ -42,7 +43,7 @@ class GroundStation:
         # Convert satellite ECI to ECEF
         # This requires GMST calculation
 
-        gmst = self._calculate_gmst(time)
+        gmst = self._calculate_gmst(time, jd=jd, fr=fr)
         sat_ecef = self._eci_to_ecef(satellite_eci, gmst)
 
         # Vector from station to satellite in ECEF
@@ -96,28 +97,29 @@ class GroundStation:
 
         return az, el, range_km
 
-    def _calculate_gmst(self, time):
+    def _calculate_gmst(self, time, jd=None, fr=None):
         """Calculates Greenwich Mean Sidereal Time."""
-        if isinstance(time, (list, np.ndarray)):
-            # Vectorized path
-            # Assume array of datetime objects
-            # We need to extract components efficiently
-            # List comprehension is fastest way to unpack datetime objects in python
-            # unless we convert to pandas datetime index (heavy dependency)
+        if jd is None or fr is None:
+            if isinstance(time, (list, np.ndarray)):
+                # Vectorized path
+                # Assume array of datetime objects
+                # We need to extract components efficiently
+                # List comprehension is fastest way to unpack datetime objects in python
+                # unless we convert to pandas datetime index (heavy dependency)
 
-            ts = np.array(time) if isinstance(time, list) else time
+                ts = np.array(time) if isinstance(time, list) else time
 
-            years = np.array([t.year for t in ts])
-            months = np.array([t.month for t in ts])
-            days = np.array([t.day for t in ts])
-            hours = np.array([t.hour for t in ts])
-            minutes = np.array([t.minute for t in ts])
-            seconds = np.array([t.second + t.microsecond * 1e-6 for t in ts])
+                years = np.array([t.year for t in ts])
+                months = np.array([t.month for t in ts])
+                days = np.array([t.day for t in ts])
+                hours = np.array([t.hour for t in ts])
+                minutes = np.array([t.minute for t in ts])
+                seconds = np.array([t.second + t.microsecond * 1e-6 for t in ts])
 
-            jd, fr = jday(years, months, days, hours, minutes, seconds)
-        else:
-            # Scalar path
-            jd, fr = jday(time.year, time.month, time.day, time.hour, time.minute, time.second + time.microsecond * 1e-6)
+                jd, fr = jday(years, months, days, hours, minutes, seconds)
+            else:
+                # Scalar path
+                jd, fr = jday(time.year, time.month, time.day, time.hour, time.minute, time.second + time.microsecond * 1e-6)
 
         # GMST approximation
         t_ut1 = jd + fr - 2451545.0

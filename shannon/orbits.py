@@ -44,7 +44,7 @@ class PassPredictor:
 
         # Vectorized look angles computation
         # Pass all points, filter later
-        az, el, range_km = ground_station.compute_look_angles(r, times_arr)
+        az, el, range_km = ground_station.compute_look_angles(r, times_arr, jd=jd_arr, fr=fr_arr)
 
         # Create mask for valid pass points:
         # 1. SGP4 was successful
