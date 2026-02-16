@@ -22,19 +22,19 @@ class PassPredictor:
             return None
 
         # Create time array
-        times = [start_time + datetime.timedelta(seconds=step_seconds * i) for i in range(num_steps)]
-        times_arr = np.array(times)
+        # Optimization: Don't create the full list of datetime objects yet.
+        # Use vectorized JD calculation for speed.
 
-        # Calculate JD for SGP4
-        # We need to extract components efficiently
-        years = np.array([t.year for t in times])
-        months = np.array([t.month for t in times])
-        days = np.array([t.day for t in times])
-        hours = np.array([t.hour for t in times])
-        minutes = np.array([t.minute for t in times])
-        seconds = np.array([t.second + t.microsecond * 1e-6 for t in times])
+        # Calculate start JD
+        jd_start, fr_start = jday(
+            start_time.year, start_time.month, start_time.day,
+            start_time.hour, start_time.minute, start_time.second + start_time.microsecond * 1e-6
+        )
 
-        jd_arr, fr_arr = jday(years, months, days, hours, minutes, seconds)
+        # Create vectorized time arrays
+        # fr (fraction of day) increases by step_seconds / 86400.0 per step
+        fr_arr = fr_start + np.arange(num_steps) * (step_seconds / 86400.0)
+        jd_arr = np.full(num_steps, jd_start)
 
         # Vectorized SGP4 propagation
         e, r, v = self.satellite.sgp4_array(jd_arr, fr_arr)
@@ -44,7 +44,8 @@ class PassPredictor:
 
         # Vectorized look angles computation
         # Pass all points, filter later
-        az, el, range_km = ground_station.compute_look_angles(r, times_arr, jd=jd_arr, fr=fr_arr)
+        # We pass time=None because we are providing jd/fr, so GMST calculation doesn't need time object
+        az, el, range_km = ground_station.compute_look_angles(r, None, jd=jd_arr, fr=fr_arr)
 
         # Create mask for valid pass points:
         # 1. SGP4 was successful
@@ -72,24 +73,22 @@ class PassPredictor:
         aos_idx = pass_indices[0]
         los_idx = pass_indices[-1]
 
-        aos = times[aos_idx]
+        aos = start_time + datetime.timedelta(seconds=step_seconds * int(aos_idx))
+
         # Match iterative behavior: LOS is the time step *after* the last visible point
         # In the iterative loop, LOS was set when el <= 0.
         # Here los_idx is the last point where el > 0.
         # So the actual LOS event happens between times[los_idx] and times[los_idx+1].
         # The previous code returned the time of the first non-visible point.
-        if los_idx + 1 < len(times):
-            los = times[los_idx + 1]
-        else:
-             # If pass goes to the end of the window, we estimate LOS as one step after
-            los = times[los_idx] + datetime.timedelta(seconds=step_seconds)
+        los = start_time + datetime.timedelta(seconds=step_seconds * int(los_idx + 1))
 
         max_el = np.max(el[pass_indices])
 
         pass_points = []
         for i in pass_indices:
+            t = start_time + datetime.timedelta(seconds=step_seconds * int(i))
             pass_points.append({
-                'time': times[i],
+                'time': t,
                 'az': float(az[i]),
                 'el': float(el[i]),
                 'range_km': float(range_km[i])
