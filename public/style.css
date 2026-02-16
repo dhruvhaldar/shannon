@@ -113,3 +113,28 @@ button:hover {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* Accessibility Improvements */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    background: #0070f3;
+    color: white;
+    padding: 10px 15px;
+    z-index: 1000;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 0 0 4px 4px;
+    transition: top 0.2s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Enhanced Focus Visibility */
+*:focus-visible {
+    outline: 2px solid #0070f3;
+    outline-offset: 2px;
+}
