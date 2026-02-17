@@ -19,16 +19,16 @@
             <div class="panel" id="link-budget-panel">
                 <h2>Link Budget Calculator</h2>
                 <form id="link-budget-form">
-                    <label>Frequency (Hz): <input type="number" id="freq" value="2400000000"></label>
-                    <label>Distance (km): <input type="number" id="dist" value="600"></label>
-                    <label>Tx Power (dBm): <input type="number" id="tx_pwr" value="30"></label>
-                    <label>Tx Cable Loss (dB): <input type="number" id="tx_loss" value="1"></label>
-                    <label>Tx Antenna Gain (dBi): <input type="number" id="tx_gain" value="0"></label>
-                    <label>Atmosphere Loss (dB): <input type="number" id="atm_loss" value="0.5"></label>
-                    <label>Rx Antenna Gain (dBi): <input type="number" id="rx_gain" value="15"></label>
-                    <label>Rx Noise Temp (K): <input type="number" id="rx_temp" value="150"></label>
-                    <label>Data Rate (bps): <input type="number" id="rate" value="9600"></label>
-                    <label>Req. Eb/N0 (dB): <input type="number" id="req_ebno" value="10"></label>
+                    <label>Frequency (Hz): <input type="number" id="freq" value="2400000000" required step="any" min="0"></label>
+                    <label>Distance (km): <input type="number" id="dist" value="600" required step="any" min="0"></label>
+                    <label>Tx Power (dBm): <input type="number" id="tx_pwr" value="30" required step="any"></label>
+                    <label>Tx Cable Loss (dB): <input type="number" id="tx_loss" value="1" required step="any" min="0"></label>
+                    <label>Tx Antenna Gain (dBi): <input type="number" id="tx_gain" value="0" required step="any"></label>
+                    <label>Atmosphere Loss (dB): <input type="number" id="atm_loss" value="0.5" required step="any" min="0"></label>
+                    <label>Rx Antenna Gain (dBi): <input type="number" id="rx_gain" value="15" required step="any"></label>
+                    <label>Rx Noise Temp (K): <input type="number" id="rx_temp" value="150" required step="any" min="0"></label>
+                    <label>Data Rate (bps): <input type="number" id="rate" value="9600" required step="any" min="0"></label>
+                    <label>Req. Eb/N0 (dB): <input type="number" id="req_ebno" value="10" required step="any"></label>
                     <button type="submit">Calculate Margin</button>
                 </form>
                 <div id="link-result" aria-live="polite"></div>
@@ -37,11 +37,11 @@
             <div class="panel" id="pass-predict-panel">
                 <h2>Pass Prediction</h2>
                 <form id="pass-form">
-                    <label>TLE Line 1: <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995"></label>
-                    <label>TLE Line 2: <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519"></label>
-                    <label>Lat: <input type="number" id="lat" value="59.3498"></label>
-                    <label>Lon: <input type="number" id="lon" value="18.0707"></label>
-                    <label>Alt (m): <input type="number" id="alt" value="10"></label>
+                    <label>TLE Line 1: <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995" required></label>
+                    <label>TLE Line 2: <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519" required></label>
+                    <label>Lat: <input type="number" id="lat" value="59.3498" required step="any" min="-90" max="90"></label>
+                    <label>Lon: <input type="number" id="lon" value="18.0707" required step="any" min="-180" max="180"></label>
+                    <label>Alt (m): <input type="number" id="alt" value="10" required step="any" min="0"></label>
                     <button type="submit">Predict Next Pass</button>
                 </form>
                 <div id="skyplot" aria-live="polite"></div>
@@ -57,7 +57,7 @@
                             <option value="16-QAM">16-QAM</option>
                         </select>
                     </label>
-                    <label>SNR (dB): <input type="number" id="snr" value="15"></label>
+                    <label>SNR (dB): <input type="number" id="snr" value="15" required step="any"></label>
                     <button type="submit">Visualize</button>
                 </form>
                 <canvas id="iq-canvas" width="300" height="300"></canvas>
@@ -68,6 +68,25 @@
     <script src="skyplot.js"></script>
     <script src="constellations.js"></script>
     <script>
+        // Helper to format error messages
+        async function handleResponse(res) {
+            if (!res.ok) {
+                const errorData = await res.json();
+                let msg = 'Server Error';
+                if (errorData.detail) {
+                     if (Array.isArray(errorData.detail)) {
+                         msg = errorData.detail.map(e => `${e.loc.join('.')}: ${e.msg}`).join(', ');
+                     } else {
+                         msg = errorData.detail;
+                     }
+                } else if (errorData.error) {
+                    msg = errorData.error;
+                }
+                throw new Error(msg);
+            }
+            return res.json();
+        }
+
         // Link Budget Form Handler
         document.getElementById('link-budget-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -96,7 +115,8 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
                 });
-                const result = await res.json();
+
+                const result = await handleResponse(res);
 
                 let html = `<h3>Margin: ${result.margin_db.toFixed(2)} dB</h3><ul>`;
                 result.losses.forEach(l => {
@@ -106,7 +126,7 @@
                 document.getElementById('link-result').innerHTML = html;
             } catch (err) {
                 console.error(err);
-                document.getElementById('link-result').innerHTML = '<p style="color:red">Error calculating link budget.</p>';
+                document.getElementById('link-result').innerHTML = `<p style="color:red">Error: ${err.message}</p>`;
             } finally {
                 btn.disabled = false;
                 btn.removeAttribute('aria-busy');
@@ -137,7 +157,8 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
                 });
-                const result = await res.json();
+
+                const result = await handleResponse(res);
 
                 if(result.message) {
                     document.getElementById('skyplot').innerText = result.message;
@@ -150,7 +171,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                document.getElementById('skyplot').innerText = 'Error predicting pass.';
+                document.getElementById('skyplot').innerText = `Error: ${err.message}`;
             } finally {
                 btn.disabled = false;
                 btn.removeAttribute('aria-busy');
@@ -179,17 +200,24 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
                 });
-                const result = await res.json();
+
+                const result = await handleResponse(res);
 
                 if(result.iq_data) {
                     drawConstellation(result.iq_data);
                     document.getElementById('iq-status').innerText = 'Constellation updated.';
                 } else {
-                    document.getElementById('iq-status').innerText = 'Error: ' + result.error;
+                    // Backend returns {error: "..."} on some logic errors even with 200 OK?
+                    // Check logic in index.py:
+                    // except ValueError as e: return {"error": str(e)}
+                    // So we handle it here.
+                     if (result.error) {
+                        document.getElementById('iq-status').innerText = 'Error: ' + result.error;
+                    }
                 }
             } catch (err) {
                 console.error(err);
-                document.getElementById('iq-status').innerText = 'Error visualizing constellation.';
+                document.getElementById('iq-status').innerText = `Error: ${err.message}`;
             } finally {
                 btn.disabled = false;
                 btn.removeAttribute('aria-busy');
