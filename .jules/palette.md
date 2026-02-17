@@ -5,3 +5,7 @@
 ## 2024-05-23 - [Global Focus Visibility]
 **Learning:** The application relied entirely on browser default focus rings, which were often invisible against the white background. Implementing a high-contrast `*:focus-visible` style with `outline-offset` ensured visibility without cluttering the UI for mouse users.
 **Action:** Verify focus visibility on all interactive elements, especially custom inputs and buttons.
+
+## 2024-06-13 - [HTML5 Validation Baseline]
+**Learning:** The application relied solely on backend validation, resulting in generic error messages for simple issues like missing fields. Adding HTML5 validation attributes (`required`, `min`, `step`) provided immediate, accessible feedback without custom JS logic.
+**Action:** Always baseline forms with HTML5 validation attributes before relying on backend validation feedback.

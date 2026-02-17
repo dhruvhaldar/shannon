@@ -138,3 +138,9 @@ button:hover {
     outline: 2px solid #0070f3;
     outline-offset: 2px;
 }
+
+/* Form Validation Feedback */
+input:invalid {
+    border-color: #ff4d4f;
+    outline-color: #ff4d4f;
+}
