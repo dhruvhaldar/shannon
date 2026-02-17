@@ -11,6 +11,27 @@ class GroundStation:
         self.alt = alt  # Meters
 
         self.location = self._geodetic_to_ecef(lat, lon, alt)
+        self._compute_enu_rotation_matrix()
+
+    def _compute_enu_rotation_matrix(self):
+        """Precomputes the ECEF to ENU rotation matrix."""
+        lat_rad = math.radians(self.lat)
+        lon_rad = math.radians(self.lon)
+
+        sin_lat = math.sin(lat_rad)
+        cos_lat = math.cos(lat_rad)
+        sin_lon = math.sin(lon_rad)
+        cos_lon = math.cos(lon_rad)
+
+        # R matrix (ECEF to ENU)
+        # Row 0: [-sin_lon, cos_lon, 0]
+        # Row 1: [-sin_lat*cos_lon, -sin_lat*sin_lon, cos_lat]
+        # Row 2: [cos_lat*cos_lon, cos_lat*sin_lon, sin_lat]
+        self.R = np.array([
+            [-sin_lon, cos_lon, 0],
+            [-sin_lat * cos_lon, -sin_lat * sin_lon, cos_lat],
+            [cos_lat * cos_lon, cos_lat * sin_lon, sin_lat]
+        ])
 
     def _geodetic_to_ecef(self, lat, lon, alt):
         # WGS84 ellipsoid constants
@@ -59,27 +80,20 @@ class GroundStation:
         # We need to rotate from ECEF to SEZ (South-East-Zenith) or ENU (East-North-Up)
         # Let's use ENU
 
-        lat_rad = math.radians(self.lat)
-        lon_rad = math.radians(self.lon)
-
-        sin_lat = math.sin(lat_rad)
-        cos_lat = math.cos(lat_rad)
-        sin_lon = math.sin(lon_rad)
-        cos_lon = math.cos(lon_rad)
-
+        # Optimization: Use precomputed rotation matrix
+        # enu = R * rx_vec
         if rx_vec.ndim == 1:
-            dx, dy, dz = rx_vec
+            # 1D case: (3,)
+            # R is (3, 3). result is (3,)
+            enu = self.R @ rx_vec
+            e, n, u = enu
         else:
-            dx, dy, dz = rx_vec[:, 0], rx_vec[:, 1], rx_vec[:, 2]
-
-        # ENU transformation matrix
-        # E = -sin_lon * dx + cos_lon * dy
-        # N = -sin_lat * cos_lon * dx - sin_lat * sin_lon * dy + cos_lat * dz
-        # U = cos_lat * cos_lon * dx + cos_lat * sin_lon * dy + sin_lat * dz
-
-        e = -sin_lon * dx + cos_lon * dy
-        n = -sin_lat * cos_lon * dx - sin_lat * sin_lon * dy + cos_lat * dz
-        u = cos_lat * cos_lon * dx + cos_lat * sin_lon * dy + sin_lat * dz
+            # 2D case: (N, 3)
+            # R is (3, 3). result = rx_vec @ R.T -> (N, 3)
+            enu = rx_vec @ self.R.T
+            e = enu[:, 0]
+            n = enu[:, 1]
+            u = enu[:, 2]
 
         # Calculate Az/El
         # Azimuth is measured clockwise from North
