@@ -1,3 +1,5 @@
-## 2023-10-27 - Vectorizing SGP4 Propagation
-**Learning:** Replacing iterative SGP4 propagation with `sgp4_array` and vectorized numpy math provides significant speedup (~4x for 10 days), but requires careful handling of edge cases like pass truncation at window boundaries to match iterative behavior.
-**Action:** When vectorizing time-series simulations, ensure boundary conditions (start/end of window) match the original iterative logic or are explicitly defined.
+# Bolt's Journal
+
+## 2024-05-23 - Orbital Pass Prediction Bottleneck
+**Learning:** `PassPredictor.get_next_pass` computed SGP4 propagation and look angles for the *entire* requested duration (e.g., 30 days) before filtering for visibility. For sparse events like LEO passes, this wasted >95% of computation time if the pass occurred early.
+**Action:** Implemented a chunked search strategy (24h chunks). For future search problems over time series, always consider lazy evaluation or chunking instead of monolithic computation.
