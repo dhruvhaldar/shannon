@@ -19,15 +19,15 @@
             <div class="panel" id="link-budget-panel">
                 <h2>Link Budget Calculator</h2>
                 <form id="link-budget-form">
-                    <label>Frequency (Hz): <input type="number" id="freq" value="2400000000" required step="any" min="0"></label>
+                    <label><span>Frequency (Hz)<small id="freq-helper"></small>:</span> <input type="number" id="freq" value="2400000000" required step="any" min="0"></label>
                     <label>Distance (km): <input type="number" id="dist" value="600" required step="any" min="0"></label>
-                    <label>Tx Power (dBm): <input type="number" id="tx_pwr" value="30" required step="any"></label>
+                    <label><span>Tx Power (dBm)<small id="pwr-helper"></small>:</span> <input type="number" id="tx_pwr" value="30" required step="any"></label>
                     <label>Tx Cable Loss (dB): <input type="number" id="tx_loss" value="1" required step="any" min="0"></label>
                     <label>Tx Antenna Gain (dBi): <input type="number" id="tx_gain" value="0" required step="any"></label>
                     <label>Atmosphere Loss (dB): <input type="number" id="atm_loss" value="0.5" required step="any" min="0"></label>
                     <label>Rx Antenna Gain (dBi): <input type="number" id="rx_gain" value="15" required step="any"></label>
                     <label>Rx Noise Temp (K): <input type="number" id="rx_temp" value="150" required step="any" min="0"></label>
-                    <label>Data Rate (bps): <input type="number" id="rate" value="9600" required step="any" min="0"></label>
+                    <label><span>Data Rate (bps)<small id="rate-helper"></small>:</span> <input type="number" id="rate" value="9600" required step="any" min="0"></label>
                     <label>Req. Eb/N0 (dB): <input type="number" id="req_ebno" value="10" required step="any"></label>
                     <button type="submit">Calculate Margin</button>
                 </form>
@@ -224,6 +224,43 @@
                 btn.innerText = originalText;
             }
         });
+
+        // --- UX Helpers ---
+        function formatFrequency(hz) {
+            if (!hz) return '';
+            if (hz >= 1e9) return ` (${(hz/1e9).toFixed(2)} GHz)`;
+            if (hz >= 1e6) return ` (${(hz/1e6).toFixed(2)} MHz)`;
+            if (hz >= 1e3) return ` (${(hz/1e3).toFixed(2)} kHz)`;
+            return '';
+        }
+
+        function formatPower(dbm) {
+            if (dbm === '' || isNaN(dbm)) return '';
+            const watts = Math.pow(10, (dbm - 30) / 10);
+            if (watts >= 1) return ` (${watts.toFixed(2)} W)`;
+            if (watts >= 1e-3) return ` (${(watts*1e3).toFixed(2)} mW)`;
+            return ` (${(watts*1e6).toFixed(2)} µW)`;
+        }
+
+        function formatRate(bps) {
+            if (!bps) return '';
+            if (bps >= 1e6) return ` (${(bps/1e6).toFixed(2)} Mbps)`;
+            if (bps >= 1e3) return ` (${(bps/1e3).toFixed(2)} kbps)`;
+            return '';
+        }
+
+        function attachHelper(inputId, helperId, formatter) {
+            const input = document.getElementById(inputId);
+            const helper = document.getElementById(helperId);
+            if (!input || !helper) return;
+            const update = () => helper.textContent = formatter(parseFloat(input.value));
+            input.addEventListener('input', update);
+            update(); // Initial call
+        }
+
+        attachHelper('freq', 'freq-helper', formatFrequency);
+        attachHelper('tx_pwr', 'pwr-helper', formatPower);
+        attachHelper('rate', 'rate-helper', formatRate);
     </script>
 </body>
 </html>
