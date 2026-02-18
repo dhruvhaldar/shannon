@@ -144,3 +144,10 @@ input:invalid {
     border-color: #ff4d4f;
     outline-color: #ff4d4f;
 }
+
+label small {
+    font-size: 0.85em;
+    color: #666;
+    font-weight: normal;
+    margin-left: 4px;
+}
