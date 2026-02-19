@@ -65,35 +65,28 @@ class GroundStation:
         # This requires GMST calculation
 
         gmst = self._calculate_gmst(time, jd=jd, fr=fr)
-        sat_ecef = self._eci_to_ecef(satellite_eci, gmst)
+        sat_ecef_x, sat_ecef_y, sat_ecef_z = self._eci_to_ecef(satellite_eci, gmst)
 
         # Vector from station to satellite in ECEF
-        rx_vec = sat_ecef - self.location
+        # Avoid allocating intermediate (N, 3) array
+        rx_x = sat_ecef_x - self.location[0]
+        rx_y = sat_ecef_y - self.location[1]
+        rx_z = sat_ecef_z - self.location[2]
 
         # Calculate range
-        if rx_vec.ndim == 1:
-            range_km = np.linalg.norm(rx_vec)
-        else:
-            range_km = np.linalg.norm(rx_vec, axis=1)
+        # Avoid np.linalg.norm for small dimension vector
+        range_km = np.sqrt(rx_x * rx_x + rx_y * rx_y + rx_z * rx_z)
 
         # Convert to Topocentric Horizon (SEZ) system
         # We need to rotate from ECEF to SEZ (South-East-Zenith) or ENU (East-North-Up)
         # Let's use ENU
 
-        # Optimization: Use precomputed rotation matrix
-        # enu = R * rx_vec
-        if rx_vec.ndim == 1:
-            # 1D case: (3,)
-            # R is (3, 3). result is (3,)
-            enu = self.R @ rx_vec
-            e, n, u = enu
-        else:
-            # 2D case: (N, 3)
-            # R is (3, 3). result = rx_vec @ R.T -> (N, 3)
-            enu = rx_vec @ self.R.T
-            e = enu[:, 0]
-            n = enu[:, 1]
-            u = enu[:, 2]
+        # Optimization: Use precomputed rotation matrix and component-wise math
+        # Avoid matrix multiplication and allocation of intermediate array
+        # self.R is 3x3 array
+        e = rx_x * self.R[0, 0] + rx_y * self.R[0, 1] + rx_z * self.R[0, 2]
+        n = rx_x * self.R[1, 0] + rx_y * self.R[1, 1] + rx_z * self.R[1, 2]
+        u = rx_x * self.R[2, 0] + rx_y * self.R[2, 1] + rx_z * self.R[2, 2]
 
         # Calculate Az/El
         # Azimuth is measured clockwise from North
@@ -155,7 +148,4 @@ class GroundStation:
         y_ecef = -x * sin_g + y * cos_g
         z_ecef = z
 
-        if eci.ndim == 1:
-            return np.array([x_ecef, y_ecef, z_ecef])
-        else:
-            return np.stack([x_ecef, y_ecef, z_ecef], axis=1)
+        return x_ecef, y_ecef, z_ecef
