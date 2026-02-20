@@ -118,7 +118,12 @@
 
                 const result = await handleResponse(res);
 
-                let html = `<h3>Margin: ${result.margin_db.toFixed(2)} dB</h3><ul>`;
+                const margin = result.margin_db;
+                const isPositive = margin >= 0;
+                const color = isPositive ? '#15803d' : '#b91c1c';
+                const icon = isPositive ? '✅' : '❌';
+
+                let html = `<h3 style="color: ${color}">${icon} Margin: ${margin.toFixed(2)} dB</h3><ul>`;
                 result.losses.forEach(l => {
                     html += `<li>${l[0]}: ${l[1].toFixed(2)} dB</li>`;
                 });
