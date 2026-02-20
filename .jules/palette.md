@@ -9,3 +9,7 @@
 ## 2024-06-13 - [HTML5 Validation Baseline]
 **Learning:** The application relied solely on backend validation, resulting in generic error messages for simple issues like missing fields. Adding HTML5 validation attributes (`required`, `min`, `step`) provided immediate, accessible feedback without custom JS logic.
 **Action:** Always baseline forms with HTML5 validation attributes before relying on backend validation feedback.
+
+## 2026-02-20 - [Smart TLE Paste]
+**Learning:** Users frequently work with structured multi-line text (TLEs) that map to multiple inputs. Forcing manual copy-paste per field breaks flow. Intercepting the `paste` event to intelligently parse and distribute content provides a "delightful" efficiency boost without cluttering the UI with extra buttons.
+**Action:** For multi-part data often copied as a block, consider "smart paste" logic on individual inputs to auto-fill related fields.
