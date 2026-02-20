@@ -7,3 +7,7 @@
 ## 2024-05-24 - Vectorized Look Angle Computation
 **Learning:** In tight loops like look angle calculation (N > 100k points), numpy overhead for `np.stack` and `np.linalg.norm` on small dimensions (3D) is significant. Explicit component-wise operations (x, y, z arrays) avoided intermediate allocations and reduced runtime by ~70% (3.4x speedup).
 **Action:** For performance-critical vector operations on fixed small dimensions, prefer component-wise math over generalized numpy functions that allocate intermediate arrays.
+
+## 2024-05-25 - Early Rejection in Look Angles
+**Learning:** Calculating `arctan2` and `arcsin` for every point in a satellite pass search is wasteful when >90% of points are below the horizon. Computing just the vertical component `u` (linear dot product) allows early rejection of invisible points, saving expensive trig calls.
+**Action:** When filtering geometric data, always check if a cheaper linear condition (like a single component check) can be computed before expensive trigonometric functions.
