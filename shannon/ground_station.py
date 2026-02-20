@@ -50,12 +50,13 @@ class GroundStation:
 
         return np.array([x, y, z]) # km
 
-    def compute_look_angles(self, satellite_eci, time, jd=None, fr=None):
+    def compute_look_angles(self, satellite_eci, time, jd=None, fr=None, mask_invisible=False):
         """
         Computes Azimuth and Elevation from the ground station to the satellite.
         satellite_eci: [x, y, z] in km (TEME/ECI frame)
         time: datetime object or list/array of datetime objects
         jd, fr: Optional pre-calculated Julian Date components (to avoid re-calculation)
+        mask_invisible: If True, returns NaN for points where satellite is below horizon (optimization).
         """
         # Ensure input is numpy array if list
         if isinstance(satellite_eci, list):
@@ -73,8 +74,50 @@ class GroundStation:
         rx_y = sat_ecef_y - self.location[1]
         rx_z = sat_ecef_z - self.location[2]
 
+        # Calculate 'Up' component first to check visibility (optimization)
+        u = rx_x * self.R[2, 0] + rx_y * self.R[2, 1] + rx_z * self.R[2, 2]
+
+        if mask_invisible and isinstance(u, np.ndarray):
+            # Mask where u > 0 (visible)
+            visible = u > 0
+
+            # If nothing is visible, return NaNs early
+            if not np.any(visible):
+                nan_arr = np.full_like(u, np.nan)
+                return nan_arr, nan_arr, nan_arr
+
+            # Initialize results with NaNs
+            az = np.full_like(u, np.nan)
+            el = np.full_like(u, np.nan)
+            range_km = np.full_like(u, np.nan)
+
+            # Filter inputs for visible points
+            rx_x_vis = rx_x[visible]
+            rx_y_vis = rx_y[visible]
+            rx_z_vis = rx_z[visible]
+            u_vis = u[visible]
+
+            # Calculate range only for visible
+            range_km_vis = np.sqrt(rx_x_vis * rx_x_vis + rx_y_vis * rx_y_vis + rx_z_vis * rx_z_vis)
+
+            # Calculate E/N components only for visible
+            e_vis = rx_x_vis * self.R[0, 0] + rx_y_vis * self.R[0, 1] + rx_z_vis * self.R[0, 2]
+            n_vis = rx_x_vis * self.R[1, 0] + rx_y_vis * self.R[1, 1] + rx_z_vis * self.R[1, 2]
+
+            # Calculate Az/El for visible
+            az_vis = np.degrees(np.arctan2(e_vis, n_vis))
+            az_vis = np.where(az_vis < 0, az_vis + 360.0, az_vis)
+            el_vis = np.degrees(np.arcsin(u_vis / range_km_vis))
+
+            # Assign back to full arrays
+            az[visible] = az_vis
+            el[visible] = el_vis
+            range_km[visible] = range_km_vis
+
+            return az, el, range_km
+
+        # Standard path (full computation)
         # Calculate range
-        # Avoid np.linalg.norm for small dimension vector
         range_km = np.sqrt(rx_x * rx_x + rx_y * rx_y + rx_z * rx_z)
 
         # Convert to Topocentric Horizon (SEZ) system
@@ -86,7 +129,7 @@ class GroundStation:
         # self.R is 3x3 array
         e = rx_x * self.R[0, 0] + rx_y * self.R[0, 1] + rx_z * self.R[0, 2]
         n = rx_x * self.R[1, 0] + rx_y * self.R[1, 1] + rx_z * self.R[1, 2]
-        u = rx_x * self.R[2, 0] + rx_y * self.R[2, 1] + rx_z * self.R[2, 2]
+        # u is already calculated above
 
         # Calculate Az/El
         # Azimuth is measured clockwise from North
