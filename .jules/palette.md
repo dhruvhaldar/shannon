@@ -13,3 +13,7 @@
 ## 2026-02-20 - [Smart TLE Paste]
 **Learning:** Users frequently work with structured multi-line text (TLEs) that map to multiple inputs. Forcing manual copy-paste per field breaks flow. Intercepting the `paste` event to intelligently parse and distribute content provides a "delightful" efficiency boost without cluttering the UI with extra buttons.
 **Action:** For multi-part data often copied as a block, consider "smart paste" logic on individual inputs to auto-fill related fields.
+
+## 2026-02-21 - [Hidden Affordances]
+**Learning:** Smart interaction patterns like paste-handling are invisible without cues. Adding a simple helper text ("Paste a full TLE set...") immediately bridges the gap between feature existence and user discovery, while `aria-describedby` ensures screen reader users also benefit from the context.
+**Action:** Always pair hidden "power user" interactions with visible, accessible hints.
