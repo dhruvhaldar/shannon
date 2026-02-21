@@ -3,6 +3,9 @@ import numpy as np
 from scipy.special import erfc
 
 class Modulation:
+    # Precompute QPSK constellation points
+    QPSK_SYMBOLS = np.exp(1j * (np.pi/4 + np.arange(4) * np.pi/2))
+
     def __init__(self, scheme='BPSK'):
         self.scheme = scheme
 
@@ -51,7 +54,7 @@ class Modulation:
         elif self.scheme == 'QPSK':
             # Points at (+-1 +- 1j) / sqrt(2)
             ints = np.random.randint(0, 4, num_symbols)
-            symbols = np.exp(1j * (np.pi/4 + ints * np.pi/2))
+            symbols = self.QPSK_SYMBOLS[ints]
         elif self.scheme == '16-QAM':
             # Grid -3, -1, 1, 3 per axis, normalized
             # Average power of unnormalized 16-QAM (values -3, -1, 1, 3) is:
