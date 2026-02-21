@@ -19,15 +19,15 @@
             <div class="panel" id="link-budget-panel">
                 <h2>Link Budget Calculator</h2>
                 <form id="link-budget-form">
-                    <label><span>Frequency (Hz)<small id="freq-helper"></small>:</span> <input type="number" id="freq" value="2400000000" required step="any" min="0"></label>
+                    <label><span>Frequency (Hz)<small id="freq-helper"></small>:</span> <input type="number" id="freq" value="2400000000" required step="any" min="0" aria-describedby="freq-helper"></label>
                     <label>Distance (km): <input type="number" id="dist" value="600" required step="any" min="0"></label>
-                    <label><span>Tx Power (dBm)<small id="pwr-helper"></small>:</span> <input type="number" id="tx_pwr" value="30" required step="any"></label>
+                    <label><span>Tx Power (dBm)<small id="pwr-helper"></small>:</span> <input type="number" id="tx_pwr" value="30" required step="any" aria-describedby="pwr-helper"></label>
                     <label>Tx Cable Loss (dB): <input type="number" id="tx_loss" value="1" required step="any" min="0"></label>
                     <label>Tx Antenna Gain (dBi): <input type="number" id="tx_gain" value="0" required step="any"></label>
                     <label>Atmosphere Loss (dB): <input type="number" id="atm_loss" value="0.5" required step="any" min="0"></label>
                     <label>Rx Antenna Gain (dBi): <input type="number" id="rx_gain" value="15" required step="any"></label>
                     <label>Rx Noise Temp (K): <input type="number" id="rx_temp" value="150" required step="any" min="0"></label>
-                    <label><span>Data Rate (bps)<small id="rate-helper"></small>:</span> <input type="number" id="rate" value="9600" required step="any" min="0"></label>
+                    <label><span>Data Rate (bps)<small id="rate-helper"></small>:</span> <input type="number" id="rate" value="9600" required step="any" min="0" aria-describedby="rate-helper"></label>
                     <label>Req. Eb/N0 (dB): <input type="number" id="req_ebno" value="10" required step="any"></label>
                     <button type="submit">Calculate Margin</button>
                 </form>
@@ -37,8 +37,9 @@
             <div class="panel" id="pass-predict-panel">
                 <h2>Pass Prediction</h2>
                 <form id="pass-form">
-                    <label>TLE Line 1: <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995" required></label>
-                    <label>TLE Line 2: <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519" required></label>
+                    <p id="tle-hint" style="font-size: 0.9rem; color: #666; margin: 0;">✨ <strong>Tip:</strong> Paste a full TLE set to auto-fill.</p>
+                    <label>TLE Line 1: <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995" required aria-describedby="tle-hint"></label>
+                    <label>TLE Line 2: <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519" required aria-describedby="tle-hint"></label>
                     <label>Lat: <input type="number" id="lat" value="59.3498" required step="any" min="-90" max="90"></label>
                     <label>Lon: <input type="number" id="lon" value="18.0707" required step="any" min="-180" max="180"></label>
                     <label>Alt (m): <input type="number" id="alt" value="10" required step="any" min="0"></label>
