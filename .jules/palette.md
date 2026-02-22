@@ -17,3 +17,7 @@
 ## 2026-02-21 - [Hidden Affordances]
 **Learning:** Smart interaction patterns like paste-handling are invisible without cues. Adding a simple helper text ("Paste a full TLE set...") immediately bridges the gap between feature existence and user discovery, while `aria-describedby` ensures screen reader users also benefit from the context.
 **Action:** Always pair hidden "power user" interactions with visible, accessible hints.
+
+## 2026-02-21 - [Visual Feedback for Auto-fill Actions]
+**Learning:** When actions like "Smart Paste" or "Use My Location" auto-fill multiple fields, users may miss the change. Adding a transient visual cue (e.g., green flash) to the affected inputs provides immediate confirmation and builds trust in the automation.
+**Action:** Extract and reuse the `highlightInputs` pattern for any multi-field auto-fill interaction.
