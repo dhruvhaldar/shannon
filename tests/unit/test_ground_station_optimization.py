@@ -55,9 +55,15 @@ def test_compute_look_angles_scalar_optimization():
     # Optimized
     az2, el2, rng2 = gs.compute_look_angles(r, None, jd=jd, fr=fr, mask_invisible=True)
 
-    assert az1 == az2
-    assert el1 == el2
-    assert rng1 == rng2
+    if el1 > 0:
+        assert az1 == az2
+        assert el1 == el2
+        assert rng1 == rng2
+    else:
+        # If invisible, optimized version should return NaN
+        assert np.isnan(az2)
+        assert np.isnan(el2)
+        assert np.isnan(rng2)
 
 def test_pass_predictor_consistency():
     """

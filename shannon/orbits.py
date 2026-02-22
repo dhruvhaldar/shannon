@@ -109,8 +109,9 @@ class PassPredictor:
         # Vectorized look angles computation
         # Pass all points, filter later
         # We pass time=None because we are providing jd/fr, so GMST calculation doesn't need time object
+        # Note: We pass jd_start (scalar) instead of jd_arr (array) to optimize memory bandwidth in GMST calc.
         az, el, range_km = ground_station.compute_look_angles(
-            r, None, jd=jd_arr, fr=fr_arr, mask_invisible=True
+            r, None, jd=jd_start, fr=fr_arr, mask_invisible=True
         )
 
         # Create mask for valid pass points:

@@ -13,6 +13,13 @@ class GroundStation:
         self.location = self._geodetic_to_ecef(lat, lon, alt)
         self._compute_enu_rotation_matrix()
 
+        # Precompute optimization constants
+        # U_ecef is the 3rd row of R (Up vector in ECEF)
+        self.U_ecef = self.R[2]
+        # C_up = dot(location_ecef, U_ecef)
+        # This constant helps us compute vertical component u directly from ECI
+        self.C_up = np.dot(self.location, self.U_ecef)
+
     def _compute_enu_rotation_matrix(self):
         """Precomputes the ECEF to ENU rotation matrix."""
         lat_rad = math.radians(self.lat)
@@ -62,26 +69,43 @@ class GroundStation:
         if isinstance(satellite_eci, list):
             satellite_eci = np.array(satellite_eci)
 
-        # Convert satellite ECI to ECEF
-        # This requires GMST calculation
-
+        # GMST calculation
         gmst = self._calculate_gmst(time, jd=jd, fr=fr)
-        sat_ecef_x, sat_ecef_y, sat_ecef_z = self._eci_to_ecef(satellite_eci, gmst)
 
-        # Vector from station to satellite in ECEF
-        # Avoid allocating intermediate (N, 3) array
-        rx_x = sat_ecef_x - self.location[0]
-        rx_y = sat_ecef_y - self.location[1]
-        rx_z = sat_ecef_z - self.location[2]
+        # Optimization: When asking to mask invisible points, we can compute the 'Up' component (u)
+        # directly from ECI coordinates without converting the full satellite position to ECEF.
+        # This saves memory allocation and bandwidth for the majority of points (which are invisible).
+        # u = dot(sat_ecef - location, U_ecef)
+        # u = dot(sat_ecef, U_ecef) - dot(location, U_ecef)
+        # u = dot(sat_ecef, U_ecef) - C_up
+        # where sat_ecef is sat_eci rotated by GMST.
 
-        # Calculate 'Up' component first to check visibility (optimization)
-        u = rx_x * self.R[2, 0] + rx_y * self.R[2, 1] + rx_z * self.R[2, 2]
+        # This optimization is most effective when satellite_eci is a large array (vectorized).
 
-        if mask_invisible and isinstance(u, np.ndarray):
-            # Mask where u > 0 (visible)
+        # Helper to extract components
+        if satellite_eci.ndim == 1:
+            sat_x, sat_y, sat_z = satellite_eci
+        else:
+            sat_x, sat_y, sat_z = satellite_eci[:, 0], satellite_eci[:, 1], satellite_eci[:, 2]
+
+        # If optimization applies (vectorized and masking requested)
+        if mask_invisible and satellite_eci.ndim > 1:
+            cos_g = np.cos(gmst)
+            sin_g = np.sin(gmst)
+
+            Ux, Uy, Uz = self.U_ecef
+
+            # Rotate U_ecef to U_eci frame (inverse rotation of ECI->ECEF)
+            # This allows dot product in ECI frame.
+            # term_x and term_y are time-dependent components of U_eci
+            term_x = Ux * cos_g - Uy * sin_g
+            term_y = Ux * sin_g + Uy * cos_g
+
+            # Calculate u directly
+            u = sat_x * term_x + sat_y * term_y + sat_z * Uz - self.C_up
+
             visible = u > 0
 
-            # If nothing is visible, return NaNs early
             if not np.any(visible):
                 nan_arr = np.full_like(u, np.nan)
                 return nan_arr, nan_arr, nan_arr
@@ -91,52 +115,61 @@ class GroundStation:
             el = np.full_like(u, np.nan)
             range_km = np.full_like(u, np.nan)
 
-            # Filter inputs for visible points
-            rx_x_vis = rx_x[visible]
-            rx_y_vis = rx_y[visible]
-            rx_z_vis = rx_z[visible]
+            # For visible points, we MUST do the full ECEF conversion to get Azimuth and Range
+            # But we only do it for the visible subset.
+
+            # Filter GMST related values
+            cos_g_vis = cos_g[visible]
+            sin_g_vis = sin_g[visible]
+
+            sat_x_vis = sat_x[visible]
+            sat_y_vis = sat_y[visible]
+            sat_z_vis = sat_z[visible]
+
+            sat_ecef_x_vis = sat_x_vis * cos_g_vis + sat_y_vis * sin_g_vis
+            sat_ecef_y_vis = -sat_x_vis * sin_g_vis + sat_y_vis * cos_g_vis
+            sat_ecef_z_vis = sat_z_vis
+
+            rx_x_vis = sat_ecef_x_vis - self.location[0]
+            rx_y_vis = sat_ecef_y_vis - self.location[1]
+            rx_z_vis = sat_ecef_z_vis - self.location[2]
+
             u_vis = u[visible]
 
-            # Calculate range only for visible
-            range_km_vis = np.sqrt(rx_x_vis * rx_x_vis + rx_y_vis * rx_y_vis + rx_z_vis * rx_z_vis)
+            range_km_vis = np.sqrt(rx_x_vis**2 + rx_y_vis**2 + rx_z_vis**2)
 
-            # Calculate E/N components only for visible
             e_vis = rx_x_vis * self.R[0, 0] + rx_y_vis * self.R[0, 1] + rx_z_vis * self.R[0, 2]
             n_vis = rx_x_vis * self.R[1, 0] + rx_y_vis * self.R[1, 1] + rx_z_vis * self.R[1, 2]
 
-            # Calculate Az/El for visible
             az_vis = np.degrees(np.arctan2(e_vis, n_vis))
             az_vis = np.where(az_vis < 0, az_vis + 360.0, az_vis)
             el_vis = np.degrees(np.arcsin(u_vis / range_km_vis))
 
-            # Assign back to full arrays
             az[visible] = az_vis
             el[visible] = el_vis
             range_km[visible] = range_km_vis
 
             return az, el, range_km
 
-        # Standard path (full computation)
+        # Legacy/Scalar/No-mask path (Full computation)
+        sat_ecef_x, sat_ecef_y, sat_ecef_z = self._eci_to_ecef(satellite_eci, gmst)
+
+        # Vector from station to satellite in ECEF
+        rx_x = sat_ecef_x - self.location[0]
+        rx_y = sat_ecef_y - self.location[1]
+        rx_z = sat_ecef_z - self.location[2]
+
+        u = rx_x * self.R[2, 0] + rx_y * self.R[2, 1] + rx_z * self.R[2, 2]
+
         # Calculate range
         range_km = np.sqrt(rx_x * rx_x + rx_y * rx_y + rx_z * rx_z)
 
-        # Convert to Topocentric Horizon (SEZ) system
-        # We need to rotate from ECEF to SEZ (South-East-Zenith) or ENU (East-North-Up)
-        # Let's use ENU
-
-        # Optimization: Use precomputed rotation matrix and component-wise math
-        # Avoid matrix multiplication and allocation of intermediate array
-        # self.R is 3x3 array
+        # Calculate Az/El
         e = rx_x * self.R[0, 0] + rx_y * self.R[0, 1] + rx_z * self.R[0, 2]
         n = rx_x * self.R[1, 0] + rx_y * self.R[1, 1] + rx_z * self.R[1, 2]
-        # u is already calculated above
 
-        # Calculate Az/El
-        # Azimuth is measured clockwise from North
         az = np.degrees(np.arctan2(e, n))
 
-        # Handle negative azimuths
-        # np.where works for arrays, standard if/else for scalars
         if np.ndim(az) == 0:
             if az < 0:
                 az += 360.0
@@ -145,33 +178,36 @@ class GroundStation:
 
         el = np.degrees(np.arcsin(u / range_km))
 
+        if mask_invisible:
+             # Apply mask at the end for scalar/legacy path
+             if np.ndim(el) == 0:
+                 if el <= 0:
+                     return np.nan, np.nan, np.nan
+             else:
+                 invisible = u <= 0 # or el <= 0
+                 az[invisible] = np.nan
+                 el[invisible] = np.nan
+                 range_km[invisible] = np.nan
+
         return az, el, range_km
 
     def _calculate_gmst(self, time, jd=None, fr=None):
         """Calculates Greenwich Mean Sidereal Time."""
         if jd is None or fr is None:
             if isinstance(time, (list, np.ndarray)):
-                # Vectorized path
-                # Assume array of datetime objects
-                # We need to extract components efficiently
-                # List comprehension is fastest way to unpack datetime objects in python
-                # unless we convert to pandas datetime index (heavy dependency)
-
                 ts = np.array(time) if isinstance(time, list) else time
-
                 years = np.array([t.year for t in ts])
                 months = np.array([t.month for t in ts])
                 days = np.array([t.day for t in ts])
                 hours = np.array([t.hour for t in ts])
                 minutes = np.array([t.minute for t in ts])
                 seconds = np.array([t.second + t.microsecond * 1e-6 for t in ts])
-
                 jd, fr = jday(years, months, days, hours, minutes, seconds)
             else:
-                # Scalar path
                 jd, fr = jday(time.year, time.month, time.day, time.hour, time.minute, time.second + time.microsecond * 1e-6)
 
         # GMST approximation
+        # Handles both scalar and array inputs via numpy broadcasting
         t_ut1 = jd + fr - 2451545.0
         gmst = 280.46061837 + 360.98564736629 * t_ut1
         gmst %= 360.0

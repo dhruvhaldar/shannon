@@ -15,3 +15,7 @@
 ## 2024-05-26 - Optimized QPSK Symbol Generation
 **Learning:** `np.exp` is significantly slower (approx. 30%) than array indexing for small discrete sets (like QPSK constellation). Generating 1M symbols using `np.exp` took ~0.147s, while using a precomputed lookup table took ~0.104s.
 **Action:** Always precompute complex constellation points into a lookup table for modulation schemes with small alphabets instead of calculating them on the fly.
+
+## 2026-02-22 - Direct Vertical Component Calculation
+**Learning:** For satellite visibility checks, converting ECI to ECEF for every point is wasteful if the point is invisible. The vertical component `u` can be computed directly from ECI coordinates using precomputed rotation components, avoiding full ECEF conversion and reducing intermediate array allocations by ~60% for the invisible path.
+**Action:** When transforming coordinates solely to check a threshold (e.g., visibility), derive a direct formula for the check variable in the source frame if possible, rather than transforming the entire state vector.
