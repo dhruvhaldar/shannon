@@ -40,6 +40,11 @@
                     <p id="tle-hint" style="font-size: 0.9rem; color: #666; margin: 0;">✨ <strong>Tip:</strong> Paste a full TLE set to auto-fill.</p>
                     <label>TLE Line 1: <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995" required aria-describedby="tle-hint"></label>
                     <label>TLE Line 2: <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519" required aria-describedby="tle-hint"></label>
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
+                        <button type="button" id="locate-btn" style="background: transparent; border: none; color: #0070f3; cursor: pointer; padding: 0; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 4px;">
+                            📍 Use My Location
+                        </button>
+                    </div>
                     <label>Lat: <input type="number" id="lat" value="59.3498" required step="any" min="-90" max="90"></label>
                     <label>Lon: <input type="number" id="lon" value="18.0707" required step="any" min="-180" max="180"></label>
                     <label>Alt (m): <input type="number" id="alt" value="10" required step="any" min="0"></label>
@@ -269,6 +274,17 @@
         attachHelper('rate', 'rate-helper', formatRate);
 
         // --- Smart TLE Paste ---
+        function highlightInputs(inputs) {
+            inputs.forEach(input => {
+                const originalBg = input.style.backgroundColor;
+                input.style.transition = 'background-color 0.3s ease';
+                input.style.backgroundColor = '#dcfce7'; // Light green
+                setTimeout(() => {
+                    input.style.backgroundColor = originalBg;
+                }, 1000);
+            });
+        }
+
         function handleTLEPaste(e) {
             const clipboardData = e.clipboardData || window.clipboardData;
             const text = clipboardData.getData('Text');
@@ -286,16 +302,54 @@
                 tle1Input.value = line1;
                 tle2Input.value = line2;
 
-                // Visual feedback
-                [tle1Input, tle2Input].forEach(input => {
-                    const originalBg = input.style.backgroundColor;
-                    input.style.transition = 'background-color 0.3s ease';
-                    input.style.backgroundColor = '#dcfce7'; // Light green
-                    setTimeout(() => {
-                        input.style.backgroundColor = originalBg;
-                    }, 1000);
-                });
+                highlightInputs([tle1Input, tle2Input]);
             }
+        }
+
+        // --- Geolocation ---
+        const locateBtn = document.getElementById('locate-btn');
+        if (locateBtn) {
+            locateBtn.addEventListener('click', () => {
+                if (!navigator.geolocation) {
+                    alert('Geolocation is not supported by your browser.');
+                    return;
+                }
+
+                const originalText = locateBtn.innerText;
+                locateBtn.innerText = '⏳ Locating...';
+                locateBtn.disabled = true;
+                locateBtn.style.opacity = '0.7';
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const latInput = document.getElementById('lat');
+                        const lonInput = document.getElementById('lon');
+                        const altInput = document.getElementById('alt');
+
+                        latInput.value = position.coords.latitude.toFixed(4);
+                        lonInput.value = position.coords.longitude.toFixed(4);
+                        if (position.coords.altitude !== null) {
+                            altInput.value = position.coords.altitude.toFixed(1);
+                            highlightInputs([latInput, lonInput, altInput]);
+                        } else {
+                            highlightInputs([latInput, lonInput]);
+                        }
+
+                        locateBtn.innerText = originalText;
+                        locateBtn.disabled = false;
+                        locateBtn.style.opacity = '1';
+                    },
+                    (error) => {
+                        console.error(error);
+                        locateBtn.innerText = '⚠️ Location unavailable';
+                        setTimeout(() => {
+                            locateBtn.innerText = originalText;
+                            locateBtn.disabled = false;
+                            locateBtn.style.opacity = '1';
+                        }, 2000);
+                    }
+                );
+            });
         }
 
         const tle1Input = document.getElementById('tle1');
