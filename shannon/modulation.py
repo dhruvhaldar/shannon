@@ -6,6 +6,17 @@ class Modulation:
     # Precompute QPSK constellation points
     QPSK_SYMBOLS = np.exp(1j * (np.pi/4 + np.arange(4) * np.pi/2))
 
+    # Precompute BPSK constellation points: -1, +1
+    BPSK_SYMBOLS = np.array([-1, 1], dtype=np.complex128)
+
+    # Precompute 16-QAM constellation points
+    # Grid -3, -1, 1, 3 per axis.
+    # We generate all combinations of real and imaginary parts.
+    # Then normalize by sqrt(10).
+    _qam_vals = np.array([-3, -1, 1, 3])
+    _qam_real, _qam_imag = np.meshgrid(_qam_vals, _qam_vals)
+    QAM16_SYMBOLS = (_qam_real + 1j * _qam_imag).flatten() / math.sqrt(10)
+
     def __init__(self, scheme='BPSK'):
         self.scheme = scheme
 
@@ -48,21 +59,15 @@ class Modulation:
         if self.scheme == 'BPSK':
             # Points at -1, +1
             bits = np.random.randint(0, 2, num_symbols)
-            symbols = 2 * bits - 1 # -1 or 1
-            # Ensure complex type
-            symbols = symbols.astype(np.complex128)
+            symbols = self.BPSK_SYMBOLS[bits]
         elif self.scheme == 'QPSK':
             # Points at (+-1 +- 1j) / sqrt(2)
             ints = np.random.randint(0, 4, num_symbols)
             symbols = self.QPSK_SYMBOLS[ints]
         elif self.scheme == '16-QAM':
             # Grid -3, -1, 1, 3 per axis, normalized
-            # Average power of unnormalized 16-QAM (values -3, -1, 1, 3) is:
-            # (2*(1^2 + 3^2))/4 = (2*10)/4 = 5 per dimension. Total 10.
-            # So divide by sqrt(10).
-            real_part = 2 * np.random.randint(0, 4, num_symbols) - 3
-            imag_part = 2 * np.random.randint(0, 4, num_symbols) - 3
-            symbols = (real_part + 1j * imag_part) / math.sqrt(10)
+            ints = np.random.randint(0, 16, num_symbols)
+            symbols = self.QAM16_SYMBOLS[ints]
         else:
              raise ValueError(f"Unknown modulation scheme: {self.scheme}")
 
