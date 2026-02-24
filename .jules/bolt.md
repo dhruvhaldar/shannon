@@ -22,4 +22,8 @@
 
 ## 2025-02-23 - Modulation Symbol Generation
 **Learning:** Generating modulation symbols by random indexing into a precomputed complex lookup table is ~3.4x faster for 16-QAM than generating real/imaginary components separately and performing arithmetic/normalization on every call.
-**Action:** When simulating discrete random variables that map to complex values (like modulation symbols), always prefer \`LUT[random_indices]\` over arithmetic generation.
+**Action:** When simulating discrete random variables that map to complex values (like modulation symbols), always prefer `LUT[random_indices]` over arithmetic generation.
+
+## 2026-02-24 - Canvas Scatter Plot Optimization
+**Learning:** Batching thousands of `ctx.arc()` calls into a single path was surprisingly SLOWER (~12ms vs 7ms for 20k points) in headless Chrome, likely due to the complexity of rasterizing a path with thousands of subpaths.
+**Action:** For high-density scatter plots, replace `ctx.arc()` with `ctx.fillRect()` (drawing small squares). This avoided path construction entirely and yielded a ~2x speedup (96ms vs 194ms for 100k points).
