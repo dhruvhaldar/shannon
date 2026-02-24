@@ -138,12 +138,40 @@
                 const color = isPositive ? '#15803d' : '#b91c1c';
                 const icon = isPositive ? '✅' : '❌';
 
-                let html = `<h3 style="color: ${color}">${icon} Margin: ${margin.toFixed(2)} dB</h3><ul>`;
+                let html = `
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <h3 style="color: ${color}; margin: 0;">${icon} Margin: ${margin.toFixed(2)} dB</h3>
+                        <button type="button" class="copy-btn" aria-label="Copy Report" title="Copy to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;">📋</button>
+                    </div>
+                    <ul>`;
                 result.losses.forEach(l => {
                     html += `<li>${l[0]}: ${l[1].toFixed(2)} dB</li>`;
                 });
                 html += '</ul>';
-                document.getElementById('link-result').innerHTML = html;
+
+                const resultDiv = document.getElementById('link-result');
+                resultDiv.innerHTML = html;
+
+                // Add Copy Functionality
+                const copyBtn = resultDiv.querySelector('.copy-btn');
+                if (copyBtn) {
+                    copyBtn.addEventListener('click', () => {
+                        const report = `Link Budget Analysis\n--------------------\n` +
+                                     `Margin: ${margin.toFixed(2)} dB (${isPositive ? 'PASS' : 'FAIL'})\n\n` +
+                                     `Loss Breakdown:\n` +
+                                     result.losses.map(l => `- ${l[0]}: ${l[1].toFixed(2)} dB`).join('\n');
+
+                        navigator.clipboard.writeText(report).then(() => {
+                            const original = copyBtn.innerText;
+                            copyBtn.innerText = '✅';
+                            setTimeout(() => copyBtn.innerText = original, 2000);
+                        }).catch(err => {
+                            console.error('Copy failed:', err);
+                            // Fallback for non-secure contexts if needed, but alert is fine for now
+                            alert('Failed to copy to clipboard');
+                        });
+                    });
+                }
             } catch (err) {
                 console.error(err);
                 document.getElementById('link-result').innerHTML = `<p style="color:red">Error: ${err.message}</p>`;
