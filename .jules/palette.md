@@ -19,7 +19,7 @@
 **Action:** Always pair hidden "power user" interactions with visible, accessible hints.
 
 ## 2026-02-21 - [Visual Feedback for Auto-fill Actions]
-**Learning:** When actions like "Smart Paste" or "Use My Location" auto-fill multiple fields, users may miss the change. Adding a transient visual cue (e.g., green flash) to the affected inputs provides immediate confirmation and builds trust in the automation.
+**Learning:** When actions like "Smart Paste" or "Use My Location" auto-fill multiple fields, users may miss the change. Adding a simple transient visual cue (e.g., green flash) to the affected inputs provides immediate confirmation and builds trust in the automation.
 **Action:** Extract and reuse the `highlightInputs` pattern for any multi-field auto-fill interaction.
 
 ## 2026-02-23 - [Auto-Fill State Management]
@@ -29,3 +29,7 @@
 ## 2026-02-23 - [Complex Form Presets]
 **Learning:** Forms with >5 engineering inputs (like Link Budgets) create significant friction for exploratory testing. Users often need "standard scenarios" to start from. Adding a simple `<select>` preset loader transformed a data-entry task into a rapid exploration tool without cluttering the UI.
 **Action:** Identify forms with high input density and implement "Load Scenario" presets for common use cases.
+
+## 2026-03-01 - [Data Portability]
+**Learning:** For calculation tools where the output is critical for further reporting, users often struggle to extract formatted data. Adding a simple "Copy Result" button next to the output block bridges the gap between the tool and the user's workflow without cluttering the UI with export features.
+**Action:** Identify read-only output blocks and implement clipboard copy functionality for user convenience.
