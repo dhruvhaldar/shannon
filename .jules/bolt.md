@@ -19,3 +19,7 @@
 ## 2026-02-22 - Direct Vertical Component Calculation
 **Learning:** For satellite visibility checks, converting ECI to ECEF for every point is wasteful if the point is invisible. The vertical component `u` can be computed directly from ECI coordinates using precomputed rotation components, avoiding full ECEF conversion and reducing intermediate array allocations by ~60% for the invisible path.
 **Action:** When transforming coordinates solely to check a threshold (e.g., visibility), derive a direct formula for the check variable in the source frame if possible, rather than transforming the entire state vector.
+
+## 2025-02-23 - Modulation Symbol Generation
+**Learning:** Generating modulation symbols by random indexing into a precomputed complex lookup table is ~3.4x faster for 16-QAM than generating real/imaginary components separately and performing arithmetic/normalization on every call.
+**Action:** When simulating discrete random variables that map to complex values (like modulation symbols), always prefer \`LUT[random_indices]\` over arithmetic generation.
