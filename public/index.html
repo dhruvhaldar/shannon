@@ -83,6 +83,33 @@
     <script src="skyplot.js"></script>
     <script src="constellations.js"></script>
     <script>
+        // --- URL State Management ---
+        function syncFormToUrl(formId) {
+            const params = new URLSearchParams(window.location.search);
+            const form = document.getElementById(formId);
+            if (!form) return;
+            Array.from(form.elements).forEach(el => {
+                if (el.id && (el.tagName === 'INPUT' || el.tagName === 'SELECT')) {
+                    params.set(el.id, el.value);
+                }
+            });
+            window.history.replaceState({}, '', `${location.pathname}?${params}`);
+        }
+
+        function loadFormFromUrl(formId) {
+            const params = new URLSearchParams(window.location.search);
+            const form = document.getElementById(formId);
+            if (!form) return;
+            let updated = false;
+            Array.from(form.elements).forEach(el => {
+                if (el.id && params.has(el.id)) {
+                    el.value = params.get(el.id);
+                    el.dispatchEvent(new Event('input'));
+                    updated = true;
+                }
+            });
+        }
+
         // Helper to format error messages
         async function handleResponse(res) {
             if (!res.ok) {
@@ -133,6 +160,9 @@
 
                 const result = await handleResponse(res);
 
+                // Update URL with current form state
+                syncFormToUrl('link-budget-form');
+
                 const margin = result.margin_db;
                 const isPositive = margin >= 0;
                 const color = isPositive ? '#15803d' : '#b91c1c';
@@ -141,7 +171,10 @@
                 let html = `
                     <div style="display: flex; align-items: center; justify-content: space-between;">
                         <h3 style="color: ${color}; margin: 0;">${icon} Margin: ${margin.toFixed(2)} dB</h3>
-                        <button type="button" class="copy-btn" aria-label="Copy Report" title="Copy to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;">📋</button>
+                        <div style="display: flex; gap: 5px;">
+                            <button type="button" class="copy-url-btn" aria-label="Copy Link" title="Copy Link to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;">🔗</button>
+                            <button type="button" class="copy-btn" aria-label="Copy Report" title="Copy to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;">📋</button>
+                        </div>
                     </div>
                     <ul>`;
                 result.losses.forEach(l => {
@@ -167,9 +200,20 @@
                             setTimeout(() => copyBtn.innerText = original, 2000);
                         }).catch(err => {
                             console.error('Copy failed:', err);
-                            // Fallback for non-secure contexts if needed, but alert is fine for now
                             alert('Failed to copy to clipboard');
                         });
+                    });
+                }
+
+                const copyUrlBtn = resultDiv.querySelector('.copy-url-btn');
+                if (copyUrlBtn) {
+                    copyUrlBtn.addEventListener('click', () => {
+                        const url = window.location.href;
+                        navigator.clipboard.writeText(url).then(() => {
+                            const original = copyUrlBtn.innerText;
+                            copyUrlBtn.innerText = '✅';
+                            setTimeout(() => copyUrlBtn.innerText = original, 2000);
+                        }).catch(err => console.error('Copy failed:', err));
                     });
                 }
             } catch (err) {
@@ -434,6 +478,11 @@
                 setTimeout(() => { e.target.value = ""; }, 1500);
             });
         }
+
+        // --- Initialize from URL ---
+        loadFormFromUrl('link-budget-form');
+        loadFormFromUrl('pass-form');
+        loadFormFromUrl('iq-form');
     </script>
 </body>
 </html>
