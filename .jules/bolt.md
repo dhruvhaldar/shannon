@@ -27,3 +27,7 @@
 ## 2026-02-24 - Canvas Scatter Plot Optimization
 **Learning:** Batching thousands of `ctx.arc()` calls into a single path was surprisingly SLOWER (~12ms vs 7ms for 20k points) in headless Chrome, likely due to the complexity of rasterizing a path with thousands of subpaths.
 **Action:** For high-density scatter plots, replace `ctx.arc()` with `ctx.fillRect()` (drawing small squares). This avoided path construction entirely and yielded a ~2x speedup (96ms vs 194ms for 100k points).
+
+## 2026-02-25 - Efficient Complex Array Serialization
+**Learning:** Serializing large numpy arrays of complex numbers to JSON-compatible lists using a list comprehension (`[[float(r), float(i)] for r, i in ...]`) is significantly slower than using numpy view manipulation. `arr.view(np.float64).reshape(-1, 2).tolist()` is ~3x faster (30ms vs 90ms for 100k points) as it avoids Python loop overhead.
+**Action:** When serializing homogeneous numeric data (especially multidimensional or complex) to standard lists, assume `numpy.tolist()` combined with view/reshape is faster than manual iteration.
