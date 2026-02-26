@@ -33,3 +33,7 @@
 ## 2026-03-01 - [Data Portability]
 **Learning:** For calculation tools where the output is critical for further reporting, users often struggle to extract formatted data. Adding a simple "Copy Result" button next to the output block bridges the gap between the tool and the user's workflow without cluttering the UI with export features.
 **Action:** Identify read-only output blocks and implement clipboard copy functionality for user convenience.
+
+## 2026-03-03 - [Keyboard Accelerators]
+**Learning:** Power users often alternate between typing values and clicking submit, breaking their flow. Adding a global `Ctrl+Enter` listener to forms provides a seamless "wizard-like" experience. However, this interaction is invisible. Adding a dynamic tooltip hint to the submit button bridges the gap for discovery.
+**Action:** Implement `Ctrl+Enter` submit shortcuts on complex forms and always reveal the shortcut via tooltips.

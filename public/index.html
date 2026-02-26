@@ -483,6 +483,42 @@
         loadFormFromUrl('link-budget-form');
         loadFormFromUrl('pass-form');
         loadFormFromUrl('iq-form');
+
+        // --- Keyboard Shortcuts ---
+        function enableMetaEnterSubmit(formId) {
+            const form = document.getElementById(formId);
+            if (!form) return;
+
+            // We query the button immediately to add hints, but also check inside the handler
+            // in case the button state changes (e.g. becomes disabled).
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn) {
+                // Add accessibility and tooltip hints
+                const currentTitle = btn.getAttribute('title') || '';
+                btn.setAttribute('title', (currentTitle ? currentTitle + ' ' : '') + '(Ctrl+Enter to submit)');
+                btn.setAttribute('aria-keyshortcuts', 'Control+Enter Meta+Enter');
+            }
+
+            form.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    // Re-query or check button state at runtime
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    if (submitBtn && !submitBtn.disabled) {
+                        e.preventDefault();
+                        submitBtn.click();
+
+                        // Visual feedback
+                        const originalTransform = submitBtn.style.transform;
+                        submitBtn.style.transform = 'scale(0.95)';
+                        setTimeout(() => submitBtn.style.transform = originalTransform, 100);
+                    }
+                }
+            });
+        }
+
+        enableMetaEnterSubmit('link-budget-form');
+        enableMetaEnterSubmit('pass-form');
+        enableMetaEnterSubmit('iq-form');
     </script>
 </body>
 </html>
