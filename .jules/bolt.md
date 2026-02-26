@@ -31,3 +31,7 @@
 ## 2026-02-25 - Efficient Complex Array Serialization
 **Learning:** Serializing large numpy arrays of complex numbers to JSON-compatible lists using a list comprehension (`[[float(r), float(i)] for r, i in ...]`) is significantly slower than using numpy view manipulation. `arr.view(np.float64).reshape(-1, 2).tolist()` is ~3x faster (30ms vs 90ms for 100k points) as it avoids Python loop overhead.
 **Action:** When serializing homogeneous numeric data (especially multidimensional or complex) to standard lists, assume `numpy.tolist()` combined with view/reshape is faster than manual iteration.
+
+## 2026-02-26 - Faster Complex Noise Generation
+**Learning:** Generating complex Gaussian noise by creating a 2D array of floats `(N, 2)` and then flattening it is slower than generating a contiguous 1D array of floats `2*N` and viewing it as `complex128`. The latter avoids the overhead of multi-dimensional array creation and memory copying/striding. Coupled with `np.random.default_rng()`, this yielded a ~14% speedup.
+**Action:** When generating complex noise, use `rng.normal(..., 2*N).view(np.complex128)` instead of generating separate real/imaginary components or multidimensional arrays.

@@ -17,8 +17,9 @@ class Modulation:
     _qam_real, _qam_imag = np.meshgrid(_qam_vals, _qam_vals)
     QAM16_SYMBOLS = (_qam_real + 1j * _qam_imag).flatten() / math.sqrt(10)
 
-    def __init__(self, scheme='BPSK'):
+    def __init__(self, scheme='BPSK', seed=None):
         self.scheme = scheme
+        self.rng = np.random.default_rng(seed)
 
     def ber_formula(self, eb_no_db):
         """
@@ -54,19 +55,19 @@ class Modulation:
 
         noise_std = math.sqrt(1.0 / (2.0 * snr_linear))
 
-        noise = np.random.normal(0, noise_std, (num_symbols, 2)).view(np.complex128).flatten()
+        noise = self.rng.normal(0, noise_std, 2 * num_symbols).view(np.complex128)
 
         if self.scheme == 'BPSK':
             # Points at -1, +1
-            bits = np.random.randint(0, 2, num_symbols)
+            bits = self.rng.integers(0, 2, num_symbols)
             symbols = self.BPSK_SYMBOLS[bits]
         elif self.scheme == 'QPSK':
             # Points at (+-1 +- 1j) / sqrt(2)
-            ints = np.random.randint(0, 4, num_symbols)
+            ints = self.rng.integers(0, 4, num_symbols)
             symbols = self.QPSK_SYMBOLS[ints]
         elif self.scheme == '16-QAM':
             # Grid -3, -1, 1, 3 per axis, normalized
-            ints = np.random.randint(0, 16, num_symbols)
+            ints = self.rng.integers(0, 16, num_symbols)
             symbols = self.QAM16_SYMBOLS[ints]
         else:
              raise ValueError(f"Unknown modulation scheme: {self.scheme}")
