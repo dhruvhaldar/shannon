@@ -40,7 +40,12 @@
                     <label>Req. Eb/N0 (dB): <input type="number" id="req_ebno" value="10" required step="any"></label>
                     <button type="submit">Calculate Margin</button>
                 </form>
-                <div id="link-result" aria-live="polite"></div>
+                <div id="link-result" aria-live="polite">
+                    <div style="text-align: center; padding: 20px; color: #666; background: #f8f9fa; border-radius: 4px; border: 1px dashed #ccc; margin-top: 20px;">
+                        <span style="font-size: 1.5rem; display: block; margin-bottom: 8px;">📡</span>
+                        <p style="margin: 0; font-size: 0.9rem;">Submit the form to see link margin analysis.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="panel" id="pass-predict-panel">
@@ -59,7 +64,12 @@
                     <label>Alt (m): <input type="number" id="alt" value="10" required step="any" min="0"></label>
                     <button type="submit">Predict Next Pass</button>
                 </form>
-                <div id="skyplot" aria-live="polite"></div>
+                <div id="skyplot" aria-live="polite" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                    <div style="text-align: center; color: #666;">
+                        <span style="font-size: 1.5rem; display: block; margin-bottom: 8px;">🛰️</span>
+                        <p style="margin: 0; font-size: 0.9rem;">Predict a pass to view the skyplot.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="panel" id="iq-panel">
