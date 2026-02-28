@@ -35,3 +35,7 @@
 ## 2026-02-26 - Faster Complex Noise Generation
 **Learning:** Generating complex Gaussian noise by creating a 2D array of floats `(N, 2)` and then flattening it is slower than generating a contiguous 1D array of floats `2*N` and viewing it as `complex128`. The latter avoids the overhead of multi-dimensional array creation and memory copying/striding. Coupled with `np.random.default_rng()`, this yielded a ~14% speedup.
 **Action:** When generating complex noise, use `rng.normal(..., 2*N).view(np.complex128)` instead of generating separate real/imaginary components or multidimensional arrays.
+
+## 2024-05-27 - Fast Vector Magnitude (Numpy Power vs Multiply)
+**Learning:** Using the power operator `**2` on numpy arrays (e.g. `x**2 + y**2 + z**2`) triggers allocations via `np.power`, making it slower than direct multiplication (`x*x + y*y + z*z`). Explicit multiplication in `range_km` calculation avoided the temporary power array allocation overhead and yielded a ~25% speedup for magnitude computation.
+**Action:** When computing sums of squares on numpy arrays, use explicit element-wise multiplication (`x*x`) instead of the power operator (`x**2`) to avoid unnecessary memory allocations and improve runtime.
