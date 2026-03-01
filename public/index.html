@@ -85,7 +85,13 @@
                     <label>SNR (dB): <input type="number" id="snr" value="15" required step="any"></label>
                     <button type="submit">Visualize</button>
                 </form>
-                <canvas id="iq-canvas" width="300" height="300"></canvas>
+                <div id="iq-empty-state" style="min-height: 300px; display: flex; align-items: center; justify-content: center; border: 1px solid #eee; margin: 20px auto 0; width: 300px; box-sizing: border-box; background: #f8f9fa;">
+                    <div style="text-align: center; color: #666;">
+                        <span style="font-size: 1.5rem; display: block; margin-bottom: 8px;">📊</span>
+                        <p style="margin: 0; font-size: 0.9rem;">Submit to visualize constellation.</p>
+                    </div>
+                </div>
+                <canvas id="iq-canvas" width="300" height="300" aria-label="IQ Constellation Diagram" style="display: none;"></canvas>
                 <p id="iq-status" aria-live="polite" style="margin-top: 10px; font-weight: bold; text-align: center;"></p>
             </div>
         </main>
@@ -306,6 +312,8 @@
                 const result = await handleResponse(res);
 
                 if(result.iq_data) {
+                    document.getElementById('iq-empty-state').style.display = 'none';
+                    document.getElementById('iq-canvas').style.display = 'block';
                     drawConstellation(result.iq_data);
                     document.getElementById('iq-status').innerText = 'Constellation updated.';
                 } else {
