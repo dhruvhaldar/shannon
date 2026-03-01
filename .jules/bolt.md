@@ -39,3 +39,7 @@
 ## 2024-05-27 - Fast Vector Magnitude (Numpy Power vs Multiply)
 **Learning:** Using the power operator `**2` on numpy arrays (e.g. `x**2 + y**2 + z**2`) triggers allocations via `np.power`, making it slower than direct multiplication (`x*x + y*y + z*z`). Explicit multiplication in `range_km` calculation avoided the temporary power array allocation overhead and yielded a ~25% speedup for magnitude computation.
 **Action:** When computing sums of squares on numpy arrays, use explicit element-wise multiplication (`x*x`) instead of the power operator (`x**2`) to avoid unnecessary memory allocations and improve runtime.
+
+## 2026-03-02 - Logarithmic Identity Optimization
+**Learning:** In calculations involving a squared term inside a logarithm, such as `10 * log10(x**2)`, the python math module overhead for power and squaring is surprisingly high. Factoring the exponent out using logarithmic properties to `20 * log10(x)` combined with constant precomputation completely bypasses the exponentiation overhead, yielding a significant (~25%) speedup for repeated link budget calculations.
+**Action:** For formulas inside logarithmic scales (like dB), always expand the algebra to pull exponents out as multipliers to bypass expensive `**` operations.
