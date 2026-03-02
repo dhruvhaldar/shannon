@@ -8,6 +8,7 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
+    <div id="a11y-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="container">
         <header>
@@ -216,6 +217,7 @@
                             const original = copyBtn.innerText;
                             copyBtn.innerText = '✅';
                             setTimeout(() => copyBtn.innerText = original, 2000);
+                            announceA11y("Copied to clipboard.");
                         }).catch(err => {
                             console.error('Copy failed:', err);
                             alert('Failed to copy to clipboard');
@@ -231,6 +233,7 @@
                             const original = copyUrlBtn.innerText;
                             copyUrlBtn.innerText = '✅';
                             setTimeout(() => copyUrlBtn.innerText = original, 2000);
+                            announceA11y("Copied to clipboard.");
                         }).catch(err => console.error('Copy failed:', err));
                     });
                 }
@@ -338,6 +341,17 @@
         });
 
         // --- UX Helpers ---
+        function announceA11y(message) {
+            const announcer = document.getElementById('a11y-announcer');
+            if (!announcer) return;
+            // Clear out old text to ensure repeat announcements are read
+            announcer.textContent = '';
+            // Small timeout to allow the screen reader to register the empty state before updating
+            setTimeout(() => {
+                announcer.textContent = message;
+            }, 50);
+        }
+
         function formatFrequency(hz) {
             if (!hz) return '';
             if (hz >= 1e9) return ` (${(hz/1e9).toFixed(2)} GHz)`;
@@ -416,6 +430,7 @@
                 tle2Input.value = line2;
 
                 highlightInputs([tle1Input, tle2Input]);
+                announceA11y("TLE data pasted and autofilled.");
             }
         }
 
@@ -451,6 +466,7 @@
                         locateBtn.innerText = originalText;
                         locateBtn.disabled = false;
                         locateBtn.style.opacity = '1';
+                        announceA11y("Location updated automatically.");
                     },
                     (error) => {
                         console.error(error);
@@ -493,6 +509,7 @@
                     }
                 });
                 highlightInputs(inputsToHighlight);
+                announceA11y("Link budget scenario loaded.");
 
                 // Reset select after a delay for UX feel
                 setTimeout(() => { e.target.value = ""; }, 1500);
