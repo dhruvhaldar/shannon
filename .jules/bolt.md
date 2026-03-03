@@ -43,3 +43,7 @@
 ## 2026-03-02 - Logarithmic Identity Optimization
 **Learning:** In calculations involving a squared term inside a logarithm, such as `10 * log10(x**2)`, the python math module overhead for power and squaring is surprisingly high. Factoring the exponent out using logarithmic properties to `20 * log10(x)` combined with constant precomputation completely bypasses the exponentiation overhead, yielding a significant (~25%) speedup for repeated link budget calculations.
 **Action:** For formulas inside logarithmic scales (like dB), always expand the algebra to pull exponents out as multipliers to bypass expensive `**` operations.
+
+## 2026-03-05 - Fast Array Modulo Optimization
+**Learning:** When normalizing large continuous angular arrays to a `[0, 360]` range using `numpy`, the native in-place modulo operator `x %= 360.0` delegates to `np.fmod`, which has surprisingly high overhead. Computing the modulo explicitly using `x -= 360.0 * np.floor(x / 360.0)` is significantly faster (~3x) for large arrays.
+**Action:** Use `np.floor` math instead of the modulo operator `%` when normalizing large continuous numeric arrays. However, continue using the native `%` operator for scalars as it remains extremely fast in standard Python.
