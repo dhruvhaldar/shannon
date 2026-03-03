@@ -9,3 +9,7 @@
 ## 2026-03-02 - [Screen Reader Announcements for Visual Cues]
 **Learning:** Visual feedback mechanisms (like highlighting background colors, changing button text briefly, or auto-filling form inputs) are completely missed by screen reader users, leaving them unaware of dynamic state changes that occur silently in the DOM.
 **Action:** Implement an explicit `aria-live="polite"` announcer region (`#a11y-announcer`) and wire it up to announce text for purely visual state changes, such as successfully copying to clipboard, loading presets, or auto-populating inputs via geolocation/paste.
+
+## 2026-03-03 - [In-context Explanations for Domain Jargon]
+**Learning:** Educational/domain-specific forms (like RF link budgets) contain heavy technical jargon (e.g., Eb/N0, dBi) that can be confusing to students or non-experts. Users benefit from immediate, inline definitions to reduce cognitive load and the need to switch to external documentation.
+**Action:** Wrap technical acronyms and complex field names in `<abbr title="...">` tags and apply a dotted underline styling (`cursor: help`) to provide native tooltips. This improves both general discoverability and screen reader context without cluttering the UI.
