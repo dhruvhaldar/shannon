@@ -151,6 +151,20 @@ button:hover {
     outline-offset: 2px;
 }
 
+/* Error Alert Styles */
+.error-alert {
+    color: #b91c1c;
+    background-color: #fee2e2;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+    border: 1px solid #fca5a5;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 /* Form Validation Feedback */
 input:invalid {
     border-color: #ff4d4f;

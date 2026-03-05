@@ -95,7 +95,7 @@
                 <canvas id="iq-canvas" width="300" height="300" aria-label="IQ Constellation Diagram" role="img" style="display: none;">
                     Your browser does not support the canvas element to display the constellation diagram.
                 </canvas>
-                <p id="iq-status" aria-live="polite" style="margin-top: 10px; font-weight: bold; text-align: center;"></p>
+                <div id="iq-status" aria-live="polite" style="margin-top: 10px; font-weight: bold; text-align: center;"></div>
             </div>
         </main>
     </div>
@@ -127,6 +127,16 @@
                     updated = true;
                 }
             });
+        }
+
+        // Helper for accessible error rendering
+        function renderError(message) {
+            // Use DOMParser to escape any raw HTML strings in message for safety
+            const escaped = new Option(message).innerHTML;
+            return `<div class="error-alert" role="alert" aria-live="assertive">
+                <span>⚠️</span>
+                <span>${escaped}</span>
+            </div>`;
         }
 
         // Helper to format error messages
@@ -239,7 +249,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                document.getElementById('link-result').innerHTML = `<p style="color:red">Error: ${err.message}</p>`;
+                document.getElementById('link-result').innerHTML = renderError(err.message);
             } finally {
                 btn.disabled = false;
                 btn.removeAttribute('aria-busy');
@@ -284,7 +294,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                document.getElementById('skyplot').innerText = `Error: ${err.message}`;
+                document.getElementById('skyplot').innerHTML = renderError(err.message);
             } finally {
                 btn.disabled = false;
                 btn.removeAttribute('aria-busy');
@@ -327,12 +337,12 @@
                     // except ValueError as e: return {"error": str(e)}
                     // So we handle it here.
                      if (result.error) {
-                        document.getElementById('iq-status').innerText = 'Error: ' + result.error;
+                        document.getElementById('iq-status').innerHTML = renderError(result.error);
                     }
                 }
             } catch (err) {
                 console.error(err);
-                document.getElementById('iq-status').innerText = `Error: ${err.message}`;
+                document.getElementById('iq-status').innerHTML = renderError(err.message);
             } finally {
                 btn.disabled = false;
                 btn.removeAttribute('aria-busy');
