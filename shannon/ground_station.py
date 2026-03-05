@@ -211,7 +211,16 @@ class GroundStation:
         # Handles both scalar and array inputs via numpy broadcasting
         t_ut1 = jd + fr - 2451545.0
         gmst = 280.46061837 + 360.98564736629 * t_ut1
-        gmst %= 360.0
+
+        # Optimization: for large floating-point numpy arrays,
+        # arr -= 360.0 * np.floor(arr / 360.0) is significantly faster
+        # than the native modulo operator (arr %= 360.0) because it
+        # avoids the overhead of np.fmod.
+        if isinstance(gmst, np.ndarray):
+            gmst -= 360.0 * np.floor(gmst / 360.0)
+        else:
+            gmst %= 360.0
+
         return np.radians(gmst)
 
     def _eci_to_ecef(self, eci, gmst):
