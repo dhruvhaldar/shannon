@@ -13,3 +13,7 @@
 ## 2026-03-03 - [In-context Explanations for Domain Jargon]
 **Learning:** Educational/domain-specific forms (like RF link budgets) contain heavy technical jargon (e.g., Eb/N0, dBi) that can be confusing to students or non-experts. Users benefit from immediate, inline definitions to reduce cognitive load and the need to switch to external documentation.
 **Action:** Wrap technical acronyms and complex field names in `<abbr title="...">` tags and apply a dotted underline styling (`cursor: help`) to provide native tooltips. This improves both general discoverability and screen reader context without cluttering the UI.
+
+## 2026-03-04 - [Structural Error Handing for Accessibility]
+**Learning:** Plain text error messages injected via JavaScript lack both visual structure and `role="alert"`, making them easy for users to miss visually and potentially ignored or announced without urgency by screen readers.
+**Action:** Always inject dynamically generated error text within a structured, styled container using `role="alert"` so it stands out visually and alerts assistive technologies appropriately.
