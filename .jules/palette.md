@@ -17,3 +17,7 @@
 ## 2026-03-04 - [Structural Error Handing for Accessibility]
 **Learning:** Plain text error messages injected via JavaScript lack both visual structure and `role="alert"`, making them easy for users to miss visually and potentially ignored or announced without urgency by screen readers.
 **Action:** Always inject dynamically generated error text within a structured, styled container using `role="alert"` so it stands out visually and alerts assistive technologies appropriately.
+
+## 2026-03-05 - [Visual Polish and Emojis Screen Reader Noise]
+**Learning:** Decorative emojis used as icons in empty states or buttons add noise for screen reader users when read out literally, breaking immersion or adding confusion. Furthermore, input borders at `#ddd` fail contrast requirements, making form fields harder to see for visually impaired users.
+**Action:** Wrap decorative emojis in `<span aria-hidden="true">` to prevent assistive technologies from reading them. Ensure input borders meet contrast standards and add subtle CSS transitions to hover/focus/active states for improved tactile feedback.
