@@ -1,23 +1,3 @@
-## 2026-02-28 - [Visual Cues for Initial State]
-**Learning:** Result panels appeared completely blank or as empty bordered containers on initial load, leaving users without guidance on what those areas are for. Furthermore, disabled buttons lacked visual styling, leading to confusion during loading states.
-**Action:** Add helpful empty states with icons and descriptive text to result containers before data is fetched. Ensure `button:disabled` states are explicitly styled in CSS with appropriate opacity and cursor changes.
-
-## 2026-03-01 - [Screen Reader Support for Visualizations]
-**Learning:** `canvas` elements and D3-generated SVGs in this app were not properly announced by screen readers without explicit ARIA roles. For SVGs, screen readers attempted to parse the internal `<line>` and `<text>` nodes sequentially, which creates a noisy and confusing experience out of context.
-**Action:** Add `role="img"` to `<canvas>` elements and D3-generated SVGs. Provide an appropriate `aria-label` or fallback text to ensure the visualization's purpose is communicated correctly to screen reader users.
-
-## 2026-03-02 - [Screen Reader Announcements for Visual Cues]
-**Learning:** Visual feedback mechanisms (like highlighting background colors, changing button text briefly, or auto-filling form inputs) are completely missed by screen reader users, leaving them unaware of dynamic state changes that occur silently in the DOM.
-**Action:** Implement an explicit `aria-live="polite"` announcer region (`#a11y-announcer`) and wire it up to announce text for purely visual state changes, such as successfully copying to clipboard, loading presets, or auto-populating inputs via geolocation/paste.
-
-## 2026-03-03 - [In-context Explanations for Domain Jargon]
-**Learning:** Educational/domain-specific forms (like RF link budgets) contain heavy technical jargon (e.g., Eb/N0, dBi) that can be confusing to students or non-experts. Users benefit from immediate, inline definitions to reduce cognitive load and the need to switch to external documentation.
-**Action:** Wrap technical acronyms and complex field names in `<abbr title="...">` tags and apply a dotted underline styling (`cursor: help`) to provide native tooltips. This improves both general discoverability and screen reader context without cluttering the UI.
-
-## 2026-03-04 - [Structural Error Handing for Accessibility]
-**Learning:** Plain text error messages injected via JavaScript lack both visual structure and `role="alert"`, making them easy for users to miss visually and potentially ignored or announced without urgency by screen readers.
-**Action:** Always inject dynamically generated error text within a structured, styled container using `role="alert"` so it stands out visually and alerts assistive technologies appropriately.
-
-## 2026-03-05 - [Visual Polish and Emojis Screen Reader Noise]
-**Learning:** Decorative emojis used as icons in empty states or buttons add noise for screen reader users when read out literally, breaking immersion or adding confusion. Furthermore, input borders at `#ddd` fail contrast requirements, making form fields harder to see for visually impaired users.
-**Action:** Wrap decorative emojis in `<span aria-hidden="true">` to prevent assistive technologies from reading them. Ensure input borders meet contrast standards and add subtle CSS transitions to hover/focus/active states for improved tactile feedback.
+## 2024-03-24 - [Emoji Accessibility via innerHTML]
+**Learning:** When adding `aria-hidden="true"` spans around decorative emojis in dynamic JavaScript states (like loading buttons or copy success states), it's crucial to switch from using `.innerText` to `.innerHTML` for state management. Using `.innerText` will render the literal HTML string instead of parsing the accessibility tags, whereas `.innerHTML` correctly preserves the DOM nodes and prevents screen readers from redundantly reading out the emojis.
+**Action:** Always check the method used for DOM updates when adding accessibility tags to dynamic text. Ensure state capture (e.g., `const original = btn.innerHTML`) and restoration also use `.innerHTML`.
