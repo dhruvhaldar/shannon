@@ -21,7 +21,7 @@
                 <h2>Link Budget Calculator</h2>
                 <form id="link-budget-form">
                     <div style="margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; display: flex; align-items: center; gap: 10px;">
-                        <label for="link-preset" style="margin: 0; font-weight: bold;">📚 Load Scenario:</label>
+                        <label for="link-preset" style="margin: 0; font-weight: bold;"><span aria-hidden="true">📚</span> Load Scenario:</label>
                         <select id="link-preset" style="flex-grow: 1; padding: 5px;">
                             <option value="">-- Select --</option>
                             <option value="leo">LEO Downlink (S-Band)</option>
@@ -52,7 +52,7 @@
             <div class="panel" id="pass-predict-panel">
                 <h2>Pass Prediction</h2>
                 <form id="pass-form">
-                    <p id="tle-hint" style="font-size: 0.9rem; color: #666; margin: 0;">✨ <strong>Tip:</strong> Paste a full TLE set to auto-fill.</p>
+                    <p id="tle-hint" style="font-size: 0.9rem; color: #666; margin: 0;"><span aria-hidden="true">✨</span> <strong>Tip:</strong> Paste a full TLE set to auto-fill.</p>
                     <label><abbr title="Two-Line Element set - Line 1">TLE Line 1</abbr>: <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995" required aria-describedby="tle-hint"></label>
                     <label><abbr title="Two-Line Element set - Line 2">TLE Line 2</abbr>: <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519" required aria-describedby="tle-hint"></label>
                     <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
@@ -195,14 +195,14 @@
                 const margin = result.margin_db;
                 const isPositive = margin >= 0;
                 const color = isPositive ? '#15803d' : '#b91c1c';
-                const icon = isPositive ? '✅' : '❌';
+                const icon = isPositive ? '<span aria-hidden="true">✅</span>' : '<span aria-hidden="true">❌</span>';
 
                 let html = `
                     <div style="display: flex; align-items: center; justify-content: space-between;">
                         <h3 style="color: ${color}; margin: 0;">${icon} Margin: ${margin.toFixed(2)} dB</h3>
                         <div style="display: flex; gap: 5px;">
-                            <button type="button" class="copy-url-btn" aria-label="Copy Link" title="Copy Link to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;">🔗</button>
-                            <button type="button" class="copy-btn" aria-label="Copy Report" title="Copy to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;">📋</button>
+                            <button type="button" class="copy-url-btn" aria-label="Copy Link" title="Copy Link to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;"><span aria-hidden="true">🔗</span></button>
+                            <button type="button" class="copy-btn" aria-label="Copy Report" title="Copy to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;"><span aria-hidden="true">📋</span></button>
                         </div>
                     </div>
                     <ul>`;
@@ -224,9 +224,9 @@
                                      result.losses.map(l => `- ${l[0]}: ${l[1].toFixed(2)} dB`).join('\n');
 
                         navigator.clipboard.writeText(report).then(() => {
-                            const original = copyBtn.innerText;
-                            copyBtn.innerText = '✅';
-                            setTimeout(() => copyBtn.innerText = original, 2000);
+                            const original = copyBtn.innerHTML;
+                            copyBtn.innerHTML = '<span aria-hidden="true">✅</span>';
+                            setTimeout(() => copyBtn.innerHTML = original, 2000);
                             announceA11y("Copied to clipboard.");
                         }).catch(err => {
                             console.error('Copy failed:', err);
@@ -240,9 +240,9 @@
                     copyUrlBtn.addEventListener('click', () => {
                         const url = window.location.href;
                         navigator.clipboard.writeText(url).then(() => {
-                            const original = copyUrlBtn.innerText;
-                            copyUrlBtn.innerText = '✅';
-                            setTimeout(() => copyUrlBtn.innerText = original, 2000);
+                            const original = copyUrlBtn.innerHTML;
+                            copyUrlBtn.innerHTML = '<span aria-hidden="true">✅</span>';
+                            setTimeout(() => copyUrlBtn.innerHTML = original, 2000);
                             announceA11y("Copied to clipboard.");
                         }).catch(err => console.error('Copy failed:', err));
                     });
@@ -453,8 +453,8 @@
                     return;
                 }
 
-                const originalText = locateBtn.innerText;
-                locateBtn.innerText = '⏳ Locating...';
+                const originalHTML = locateBtn.innerHTML;
+                locateBtn.innerHTML = '<span aria-hidden="true">⏳</span> Locating...';
                 locateBtn.disabled = true;
                 locateBtn.style.opacity = '0.7';
 
@@ -473,16 +473,16 @@
                             highlightInputs([latInput, lonInput]);
                         }
 
-                        locateBtn.innerText = originalText;
+                        locateBtn.innerHTML = originalHTML;
                         locateBtn.disabled = false;
                         locateBtn.style.opacity = '1';
                         announceA11y("Location updated automatically.");
                     },
                     (error) => {
                         console.error(error);
-                        locateBtn.innerText = '⚠️ Location unavailable';
+                        locateBtn.innerHTML = '<span aria-hidden="true">⚠️</span> Location unavailable';
                         setTimeout(() => {
-                            locateBtn.innerText = originalText;
+                            locateBtn.innerHTML = originalHTML;
                             locateBtn.disabled = false;
                             locateBtn.style.opacity = '1';
                         }, 2000);
