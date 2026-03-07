@@ -39,7 +39,7 @@
                     <label><abbr title="Equivalent noise temperature of the receiver system">Rx Noise Temp (K)</abbr>: <input type="number" id="rx_temp" value="150" required step="any" min="0"></label>
                     <label><span><abbr title="Bit rate of the communication link">Data Rate (bps)</abbr><small id="rate-helper"></small>:</span> <input type="number" id="rate" value="9600" required step="any" min="0" aria-describedby="rate-helper"></label>
                     <label><abbr title="Required Energy per bit to Noise power spectral density ratio for demodulation">Req. Eb/N0 (dB)</abbr>: <input type="number" id="req_ebno" value="10" required step="any"></label>
-                    <button type="submit">Calculate Margin</button>
+                    <button type="submit"><span aria-hidden="true">🧮</span> Calculate Margin</button>
                 </form>
                 <div id="link-result" aria-live="polite">
                     <div style="text-align: center; padding: 20px; color: #666; background: #f8f9fa; border-radius: 4px; border: 1px dashed #ccc; margin-top: 20px;">
@@ -63,7 +63,7 @@
                     <label><abbr title="Ground Station Latitude">Lat</abbr>: <input type="number" id="lat" value="59.3498" required step="any" min="-90" max="90"></label>
                     <label><abbr title="Ground Station Longitude">Lon</abbr>: <input type="number" id="lon" value="18.0707" required step="any" min="-180" max="180"></label>
                     <label><abbr title="Ground Station Altitude in meters">Alt (m)</abbr>: <input type="number" id="alt" value="10" required step="any" min="0"></label>
-                    <button type="submit">Predict Next Pass</button>
+                    <button type="submit"><span aria-hidden="true">🔭</span> Predict Next Pass</button>
                 </form>
                 <div id="skyplot" aria-live="polite" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
                     <div style="text-align: center; color: #666;">
@@ -84,7 +84,7 @@
                         </select>
                     </label>
                     <label><abbr title="Signal-to-Noise Ratio">SNR (dB)</abbr>: <input type="number" id="snr" value="15" required step="any"></label>
-                    <button type="submit">Visualize</button>
+                    <button type="submit"><span aria-hidden="true">👁️</span> Visualize</button>
                 </form>
                 <div id="iq-empty-state" style="min-height: 300px; display: flex; align-items: center; justify-content: center; border: 1px solid #eee; margin: 20px auto 0; width: 300px; box-sizing: border-box; background: #f8f9fa;">
                     <div style="text-align: center; color: #666;">
@@ -162,7 +162,7 @@
         document.getElementById('link-budget-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerText;
+            const originalHTML = btn.innerHTML;
             btn.disabled = true;
             btn.setAttribute('aria-busy', 'true');
             btn.innerHTML = '<span class="spinner"></span> Calculating...';
@@ -253,7 +253,7 @@
             } finally {
                 btn.disabled = false;
                 btn.removeAttribute('aria-busy');
-                btn.innerText = originalText;
+                btn.innerHTML = originalHTML;
             }
         });
 
@@ -261,7 +261,7 @@
         document.getElementById('pass-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerText;
+            const originalHTML = btn.innerHTML;
             btn.disabled = true;
             btn.setAttribute('aria-busy', 'true');
             btn.innerHTML = '<span class="spinner"></span> Predicting...';
@@ -298,7 +298,7 @@
             } finally {
                 btn.disabled = false;
                 btn.removeAttribute('aria-busy');
-                btn.innerText = originalText;
+                btn.innerHTML = originalHTML;
             }
         });
 
@@ -306,7 +306,7 @@
         document.getElementById('iq-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerText;
+            const originalHTML = btn.innerHTML;
             btn.disabled = true;
             btn.setAttribute('aria-busy', 'true');
             btn.innerHTML = '<span class="spinner"></span> Visualizing...';
@@ -346,7 +346,7 @@
             } finally {
                 btn.disabled = false;
                 btn.removeAttribute('aria-busy');
-                btn.innerText = originalText;
+                btn.innerHTML = originalHTML;
             }
         });
 
