@@ -55,3 +55,7 @@
 ## 2026-03-05 - In-Place Masking vs np.where
 **Learning:** For conditional array updates like normalizing angles (`arr = np.where(arr < 0, arr + 360.0, arr)`), `np.where` allocates a completely new array, creating significant overhead (~0.086s for 100k points). Using in-place boolean masking (`arr[arr < 0] += 360.0`) modifies the array directly without allocating a new one, yielding a massive >15x speedup (~0.005s).
 **Action:** When updating elements in a numpy array based on a condition, always use in-place boolean masking instead of `np.where` to avoid memory allocation overhead.
+
+## 2026-03-05 - In-Place Complex Array Pre-allocation Optimization
+**Learning:** In NumPy, combining an empty array allocation (`np.empty(N, dtype=np.complex128)`), generating standard normal noise directly into its `float64` view (`rng.standard_normal(2 * N, out=out.view(np.float64))`), and doing in-place scalar multiplication and array addition avoids intermediate array instantiations entirely. When generating symbols with noise, this approach (`out += symbols`) is ~10-11% faster than creating two arrays (`noise`, `symbols`) and adding them together `symbols + noise`.
+**Action:** For hot loops that combine randomly generated values (like noise) with lookup table outputs (like symbols), allocate an `np.empty` array, populate it directly using the `out=` parameter of the RNG (using views if needed for complex numbers), and use in-place addition `+=`.
