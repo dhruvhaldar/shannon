@@ -77,14 +77,14 @@ function drawSkyplot(points) {
         .attr("cx", rScale(points[0].el) * Math.sin(points[0].az * Math.PI / 180))
         .attr("cy", -rScale(points[0].el) * Math.cos(points[0].az * Math.PI / 180))
         .attr("r", 4)
-        .style("fill", "#2ea043");
+        .style("fill", "#34d058");
 
     svg.append("text")
         .attr("x", rScale(points[0].el) * Math.sin(points[0].az * Math.PI / 180) + 5)
         .attr("y", -rScale(points[0].el) * Math.cos(points[0].az * Math.PI / 180) - 5)
         .text("AOS")
         .style("font-size", "10px")
-        .style("fill", "#2ea043");
+        .style("fill", "#34d058");
 
     // Draw LOS (last)
     const last = points[points.length-1];
@@ -92,12 +92,12 @@ function drawSkyplot(points) {
         .attr("cx", rScale(last.el) * Math.sin(last.az * Math.PI / 180))
         .attr("cy", -rScale(last.el) * Math.cos(last.az * Math.PI / 180))
         .attr("r", 4)
-        .style("fill", "#da3633");
+        .style("fill", "#ff6b6b");
 
     svg.append("text")
         .attr("x", rScale(last.el) * Math.sin(last.az * Math.PI / 180) + 5)
         .attr("y", -rScale(last.el) * Math.cos(last.az * Math.PI / 180) - 5)
         .text("LOS")
         .style("font-size", "10px")
-        .style("fill", "#da3633");
+        .style("fill", "#ff6b6b");
 }
