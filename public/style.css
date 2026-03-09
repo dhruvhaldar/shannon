@@ -47,7 +47,7 @@ header h1 {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 20px rgba(255, 176, 0, 0.3), 0 0 40px rgba(255, 176, 0, 0.15);
+    text-shadow: 0 0 40px rgba(255, 176, 0, 0.6), 0 0 40px rgba(255, 176, 0, 0.2);
     display: inline-block;
 }
 
