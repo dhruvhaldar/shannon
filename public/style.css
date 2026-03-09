@@ -31,15 +31,23 @@ header {
 
 header h1 {
     margin: 0;
-    font-size: 1.25rem;
-    color: var(--accent-amber);
+    font-size: 2.2rem;
+    letter-spacing: 2px;
+    background: linear-gradient(to right, var(--accent-amber), #ff8c00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(255, 176, 0, 0.3);
+    display: inline-block;
 }
 
 header p {
-    margin: 0;
-    font-size: 0.8rem;
+    margin: 5px 0 0;
+    font-size: 0.9rem;
     color: var(--text-dim);
     font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 .dashboard {
