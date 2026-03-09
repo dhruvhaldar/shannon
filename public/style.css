@@ -155,10 +155,22 @@ button:active:not(:disabled) {
 
 #link-result {
     margin-top: 20px;
+}
+
+.result-card {
     padding: 15px;
     background: rgba(255, 176, 0, 0.05);
-    border: 1px solid var(--accent-amber);
+    border: 1px solid var(--border-muted);
     border-radius: 6px;
+    transition: border-color 0.3s;
+}
+
+.result-card.success {
+    border-color: var(--success);
+}
+
+.result-card.error {
+    border-color: var(--error);
 }
 
 #link-result h3 {

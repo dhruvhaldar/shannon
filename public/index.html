@@ -44,7 +44,7 @@
                     <button type="submit"><span aria-hidden="true">🧮</span> Calculate Margin</button>
                 </form>
                 <div id="link-result" aria-live="polite">
-                    <div style="text-align: center; padding: 20px; color: var(--text-dim); background: var(--bg-obsidian); border-radius: 6px; border: 1px dashed var(--border-muted); margin-top: 20px;">
+                    <div style="text-align: center; padding: 20px; color: var(--text-dim); background: var(--bg-obsidian); border-radius: 6px; border: 1px dashed var(--border-muted);">
                         <span style="font-size: 1.5rem; display: block; margin-bottom: 8px;" aria-hidden="true">📡</span>
                         <p style="margin: 0; font-size: 0.9rem;">Submit the form to see link margin analysis.</p>
                     </div>
@@ -204,18 +204,19 @@
                 const icon = isPositive ? '<span aria-hidden="true">✅</span>' : '<span aria-hidden="true">❌</span>';
 
                 let html = `
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <h3 style="color: ${color}; margin: 0;">${icon} Margin: ${margin.toFixed(2)} dB</h3>
-                        <div style="display: flex; gap: 5px;">
-                            <button type="button" class="copy-url-btn" aria-label="Copy Link" title="Copy Link to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;"><span aria-hidden="true">🔗</span></button>
-                            <button type="button" class="copy-btn" aria-label="Copy Report" title="Copy to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;"><span aria-hidden="true">📋</span></button>
+                    <div class="result-card ${isPositive ? 'success' : 'error'}">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <h3 style="color: ${color}; margin: 0;">${icon} Margin: ${margin.toFixed(2)} dB</h3>
+                            <div style="display: flex; gap: 5px;">
+                                <button type="button" class="copy-url-btn" aria-label="Copy Link" title="Copy Link to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;"><span aria-hidden="true">🔗</span></button>
+                                <button type="button" class="copy-btn" aria-label="Copy Report" title="Copy to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;"><span aria-hidden="true">📋</span></button>
+                            </div>
                         </div>
-                    </div>
-                    <ul>`;
+                        <ul>`;
                 result.losses.forEach(l => {
                     html += `<li>${l[0]}: ${l[1].toFixed(2)} dB</li>`;
                 });
-                html += '</ul>';
+                html += '</ul></div>';
 
                 const resultDiv = document.getElementById('link-result');
                 resultDiv.innerHTML = html;
