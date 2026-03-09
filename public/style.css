@@ -75,7 +75,7 @@ header p {
 .panel h2 {
     margin-top: 0;
     margin-bottom: 5px;
-    border-bottom: 2px solid var(--accent-amber);
+    border-bottom: 2px solid var(--text-dim);
     padding-bottom: 5px;
     font-size: 1.2rem;
     color: var(--accent-amber);
