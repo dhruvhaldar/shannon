@@ -43,7 +43,7 @@ class IQRequest(BaseModel):
     snr_db: float
     num_symbols: int = 1000
 
-@app.post("/calculate-link-budget")
+@app.post("/api/calculate-link-budget")
 def calculate_link_budget(req: LinkBudgetRequest):
     link = LinkBudget(req.frequency, req.distance_km)
     link.set_transmitter(req.tx_power_dbm, req.tx_cable_loss, req.tx_antenna_gain)
@@ -57,7 +57,7 @@ def calculate_link_budget(req: LinkBudgetRequest):
         "losses": link.losses
     }
 
-@app.post("/predict-pass")
+@app.post("/api/predict-pass")
 def predict_pass(req: PassPredictionRequest):
     predictor = PassPredictor(req.tle_line1, req.tle_line2)
     station = GroundStation(req.lat, req.lon, req.alt)
@@ -81,7 +81,7 @@ def predict_pass(req: PassPredictionRequest):
     else:
         return {"message": "No pass found within duration."}
 
-@app.post("/generate-iq")
+@app.post("/api/generate-iq")
 def generate_iq(req: IQRequest):
     mod = Modulation(req.scheme)
     try:

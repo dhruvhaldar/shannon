@@ -187,7 +187,7 @@
                     required_eb_no: parseFloat(document.getElementById('req_ebno').value)
                 };
 
-                const res = await fetch('/calculate-link-budget', {
+                const res = await fetch('/api/calculate-link-budget', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
@@ -282,7 +282,7 @@
                     alt: parseFloat(document.getElementById('alt').value)
                 };
 
-                const res = await fetch('/predict-pass', {
+                const res = await fetch('/api/predict-pass', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
@@ -325,7 +325,7 @@
                     snr_db: parseFloat(document.getElementById('snr').value)
                 };
 
-                const res = await fetch('/generate-iq', {
+                const res = await fetch('/api/generate-iq', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
