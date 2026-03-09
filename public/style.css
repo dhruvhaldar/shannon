@@ -50,16 +50,24 @@ form {
 
 label {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     font-size: 0.9rem;
+    gap: 8px;
+}
+
+form > label {
+    display: grid;
+    grid-template-columns: 45% 55%;
+    gap: 10px;
+    align-items: center;
 }
 
 input, select {
     padding: 8px;
     border: 1px solid #888;
     border-radius: 4px;
-    width: 60%;
+    width: 100%;
+    box-sizing: border-box;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
