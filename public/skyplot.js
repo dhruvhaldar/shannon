@@ -10,8 +10,10 @@ function drawSkyplot(points) {
 
     const svg = d3.select("#skyplot")
         .append("svg")
-        .attr("width", width)
-        .attr("height", height)
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr("width", "100%")
+        .attr("height", "100%")
         .attr("role", "img")
         .attr("aria-label", "Satellite Pass Prediction Skyplot")
         .append("g")

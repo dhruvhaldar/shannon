@@ -296,7 +296,12 @@
                     document.getElementById('skyplot').innerHTML = ''; // Clear
                     drawSkyplot(result.points);
                     const info = document.createElement('div');
-                    info.innerHTML = `<p>AOS: ${result.aos}</p><p>LOS: ${result.los}</p><p>Max El: ${result.max_el.toFixed(2)}</p>`;
+                    info.className = 'pass-info-card';
+                    info.innerHTML = `
+                        <div class="info-item"><strong>AOS:</strong> <span>${result.aos}</span></div>
+                        <div class="info-item"><strong>LOS:</strong> <span>${result.los}</span></div>
+                        <div class="info-item"><strong>Max El:</strong> <span>${result.max_el.toFixed(2)}°</span></div>
+                    `;
                     document.getElementById('skyplot').appendChild(info);
                 }
             } catch (err) {
