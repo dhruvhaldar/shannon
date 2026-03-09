@@ -4,7 +4,35 @@ Shannon is a browser-based mission operations suite designed for EF2264 Operatio
 
 Named after Claude Shannon, the father of information theory, this tool allows students to validate link designs, predict satellite passes, and visualize modulation schemes in real-time.
 
-## 📚 Syllabus Mapping (EF2264)
+## � Running Locally
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/dhruvhaldar/shannon.git
+   cd shannon
+   ```
+
+2. **Set up a virtual environment (Recommended):**
+   ```bash
+   python -m venv venv
+   # On macOS/Linux:
+   source venv/bin/activate
+   # On Windows:
+   venv\Scripts\activate
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Run the server:**
+   ```bash
+   python run_server.py
+   ```
+   The application will be available at `http://localhost:8010`.
+
+## �📚 Syllabus Mapping (EF2264)
 
 This project strictly adheres to the course learning outcomes:
 
@@ -15,14 +43,6 @@ This project strictly adheres to the course learning outcomes:
 | **Orbits** | Practical calculation of orbits | SGP4 propagator for TLEs to determine Acquisition of Signal (AOS) / Loss of Signal (LOS). |
 | **Ground Segment** | Structure of ground station | Antenna Pointing calculations (Azimuth/Elevation) and Doppler Shift correction. |
 | **Signal Theory** | Modulation and encoding | Digital Modulation simulation (BPSK/QPSK/16-QAM) and Bit Error Rate (BER) estimation. |
-
-## 🚀 Deployment (Vercel)
-
-Shannon is designed to run as a serverless API with a static frontend.
-
-1. Fork this repository.
-2. Deploy to Vercel (the `api/` folder is automatically detected).
-3. Access your Mission Control at `https://your-shannon.vercel.app`.
 
 ## 📊 Artifacts & Operations Analysis
 
@@ -112,12 +132,3 @@ def test_image_downlink_margin():
     total_data = max_rate * pass_duration
     assert total_data > 8e6 # 8 Megabits (1MB)
 ```
-
-## ⚖️ License
-
-MIT License
-
-Copyright (c) 2026 [Your Name]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files... [Standard MIT Text]
