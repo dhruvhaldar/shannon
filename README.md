@@ -4,7 +4,7 @@ Shannon is a browser-based mission operations suite designed for EF2264 Operatio
 
 Named after Claude Shannon, the father of information theory, this tool allows students to validate link designs, predict satellite passes, and visualize modulation schemes in real-time.
 
-## � Running Locally
+## 🚀 Running Locally
 
 1. **Clone the repository:**
    ```bash
@@ -32,7 +32,7 @@ Named after Claude Shannon, the father of information theory, this tool allows s
    ```
    The application will be available at `http://localhost:8010`.
 
-## �📚 Syllabus Mapping (EF2264)
+## 📚 Syllabus Mapping (EF2264)
 
 This project strictly adheres to the course learning outcomes:
 
@@ -132,3 +132,5 @@ def test_image_downlink_margin():
     total_data = max_rate * pass_duration
     assert total_data > 8e6 # 8 Megabits (1MB)
 ```
+
+
