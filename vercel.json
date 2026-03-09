@@ -1,9 +1,17 @@
 {
-  "rewrites": [
-    { "source": "/calculate-link-budget", "destination": "/api/index.py" },
-    { "source": "/predict-pass", "destination": "/api/index.py" },
-    { "source": "/generate-iq", "destination": "/api/index.py" },
-    { "source": "/docs", "destination": "/api/index.py" },
-    { "source": "/openapi.json", "destination": "/api/index.py" }
+  "version": 2,
+  "builds": [
+    { "src": "api/index.py", "use": "@vercel/python" },
+    { "src": "public/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "api/index.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "public/$1"
+    }
   ]
 }
