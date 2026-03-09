@@ -112,7 +112,7 @@ input, select {
     padding: 8px;
     background: var(--bg-obsidian);
     color: var(--text-main);
-    border: 1px solid var(--border-muted);
+    border: 1px solid var(--text-dim);
     border-radius: 4px;
     width: 100%;
     box-sizing: border-box;
