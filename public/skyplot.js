@@ -31,7 +31,7 @@ function drawSkyplot(points) {
         .attr("class", "grid-circle")
         .attr("r", d => rScale(d))
         .style("fill", "none")
-        .style("stroke", "#30363d")
+        .style("stroke", "#262626")
         .style("stroke-dasharray", "3,3");
 
     // Draw axis lines (N, E, S, W)
@@ -45,7 +45,7 @@ function drawSkyplot(points) {
         .attr("y1", 0)
         .attr("x2", d => rScale(0) * Math.sin(d * Math.PI / 180))
         .attr("y2", d => -rScale(0) * Math.cos(d * Math.PI / 180))
-        .style("stroke", "#30363d");
+        .style("stroke", "#262626");
 
     // Add labels
     svg.selectAll(".label")
@@ -68,7 +68,7 @@ function drawSkyplot(points) {
     svg.append("path")
         .datum(points)
         .attr("fill", "none")
-        .attr("stroke", "#58a6ff")
+        .attr("stroke", "#ffb000")
         .attr("stroke-width", 2)
         .attr("d", line);
 
@@ -92,12 +92,12 @@ function drawSkyplot(points) {
         .attr("cx", rScale(last.el) * Math.sin(last.az * Math.PI / 180))
         .attr("cy", -rScale(last.el) * Math.cos(last.az * Math.PI / 180))
         .attr("r", 4)
-        .style("fill", "#ff7b72");
+        .style("fill", "#da3633");
 
     svg.append("text")
         .attr("x", rScale(last.el) * Math.sin(last.az * Math.PI / 180) + 5)
         .attr("y", -rScale(last.el) * Math.cos(last.az * Math.PI / 180) - 5)
         .text("LOS")
         .style("font-size", "10px")
-        .style("fill", "#ff7b72");
+        .style("fill", "#da3633");
 }

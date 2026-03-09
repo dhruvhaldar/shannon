@@ -21,8 +21,8 @@
                 <h2>Link Budget Calculator</h2>
                 <p class="panel-subtext">Visualize the signal power gains and losses from the spacecraft transmitter to the ground receiver.</p>
                 <form id="link-budget-form">
-                    <div style="margin-bottom: 10px; padding: 10px; background: rgba(88, 166, 255, 0.1); border: 1px solid #30363d; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
-                        <label for="link-preset" style="margin: 0; font-weight: 600; color: #58a6ff;"><span aria-hidden="true">📚</span> Load Scenario</label>
+                    <div style="margin-bottom: 10px; padding: 10px; background: rgba(255, 176, 0, 0.05); border: 1px solid var(--border-muted); border-radius: 6px; display: flex; align-items: center; gap: 10px;">
+                        <label for="link-preset" style="margin: 0; font-weight: 600; color: var(--accent-amber);"><span aria-hidden="true">📚</span> Load Scenario</label>
                         <select id="link-preset" style="flex-grow: 1; padding: 5px;">
                             <option value="">-- Select --</option>
                             <option value="leo">LEO Downlink (S-Band)</option>
@@ -43,7 +43,7 @@
                     <button type="submit"><span aria-hidden="true">🧮</span> Calculate Margin</button>
                 </form>
                 <div id="link-result" aria-live="polite">
-                    <div style="text-align: center; padding: 20px; color: #8b949e; background: #0d1117; border-radius: 6px; border: 1px dashed #30363d; margin-top: 20px;">
+                    <div style="text-align: center; padding: 20px; color: var(--text-dim); background: var(--bg-obsidian); border-radius: 6px; border: 1px dashed var(--border-muted); margin-top: 20px;">
                         <span style="font-size: 1.5rem; display: block; margin-bottom: 8px;" aria-hidden="true">📡</span>
                         <p style="margin: 0; font-size: 0.9rem;">Submit the form to see link margin analysis.</p>
                     </div>
@@ -58,7 +58,7 @@
                     <label><abbr title="Two-Line Element set - Line 1">TLE Line 1</abbr> <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995" required aria-describedby="tle-hint" spellcheck="false" autocorrect="off" autocapitalize="off"></label>
                     <label><abbr title="Two-Line Element set - Line 2">TLE Line 2</abbr> <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519" required aria-describedby="tle-hint" spellcheck="false" autocorrect="off" autocapitalize="off"></label>
                     <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
-                        <button type="button" id="locate-btn" style="background: transparent; border: none; color: #58a6ff; cursor: pointer; padding: 0; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 4px;">
+                        <button type="button" id="locate-btn" style="background: transparent; border: none; color: var(--accent-amber); cursor: pointer; padding: 0; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 4px;">
                             <span aria-hidden="true">📍</span> Use My Location
                         </button>
                     </div>
@@ -89,8 +89,8 @@
                     <label><abbr title="Signal-to-Noise Ratio">SNR (dB)</abbr> <input type="number" id="snr" value="15" required step="any"></label>
                     <button type="submit"><span aria-hidden="true">👁️</span> Visualize</button>
                 </form>
-                <div id="iq-empty-state" style="min-height: 300px; display: flex; align-items: center; justify-content: center; border: 1px solid #30363d; margin: 20px auto 0; width: 300px; box-sizing: border-box; background: #0d1117; border-radius: 8px;">
-                    <div style="text-align: center; color: #8b949e;">
+                <div id="iq-empty-state" style="min-height: 300px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-muted); margin: 20px auto 0; width: 300px; box-sizing: border-box; background: var(--bg-obsidian); border-radius: 8px;">
+                    <div style="text-align: center; color: var(--text-dim);">
                         <span style="font-size: 1.5rem; display: block; margin-bottom: 8px;" aria-hidden="true">📊</span>
                         <p style="margin: 0; font-size: 0.9rem;">Submit to visualize constellation.</p>
                     </div>
