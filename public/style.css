@@ -306,3 +306,23 @@ abbr[title] {
     cursor: help;
 }
 
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px 0;
+    border-top: 1px solid var(--border-muted);
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+footer a {
+    color: var(--accent-amber);
+    text-decoration: none;
+    transition: color 0.2s, text-shadow 0.2s;
+}
+
+footer a:hover {
+    color: var(--accent-gold);
+    text-shadow: 0 0 8px rgba(255, 176, 0, 0.4);
+}
+
