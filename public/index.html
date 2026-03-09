@@ -19,6 +19,7 @@
         <main class="dashboard" id="main-content" tabindex="-1">
             <div class="panel" id="link-budget-panel">
                 <h2>Link Budget Calculator</h2>
+                <p class="panel-subtext">Visualize the signal power gains and losses from the spacecraft transmitter to the ground receiver.</p>
                 <form id="link-budget-form">
                     <div style="margin-bottom: 10px; padding: 10px; background: rgba(88, 166, 255, 0.1); border: 1px solid #30363d; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
                         <label for="link-preset" style="margin: 0; font-weight: 600; color: #58a6ff;"><span aria-hidden="true">📚</span> Load Scenario</label>
@@ -51,6 +52,7 @@
 
             <div class="panel" id="pass-predict-panel">
                 <h2>Pass Prediction</h2>
+                <p class="panel-subtext">Predict the path of a satellite across the local sky for antenna tracking.</p>
                 <form id="pass-form">
                     <p id="tle-hint" style="font-size: 0.9rem; color: #8b949e; margin: 0;"><span aria-hidden="true">✨</span> <strong>Tip:</strong> Paste a full TLE set to auto-fill</p>
                     <label><abbr title="Two-Line Element set - Line 1">TLE Line 1</abbr> <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995" required aria-describedby="tle-hint" spellcheck="false" autocorrect="off" autocapitalize="off"></label>
@@ -75,6 +77,7 @@
 
             <div class="panel" id="iq-panel">
                 <h2>IQ Constellation</h2>
+                <p class="panel-subtext">Simulate digital modulation (BPSK, QPSK, 16-QAM) and visualize signal noise floors.</p>
                 <form id="iq-form">
                     <label>Scheme
                         <select id="scheme">
