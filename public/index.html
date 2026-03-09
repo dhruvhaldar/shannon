@@ -20,8 +20,8 @@
             <div class="panel" id="link-budget-panel">
                 <h2>Link Budget Calculator</h2>
                 <form id="link-budget-form">
-                    <div style="margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; display: flex; align-items: center; gap: 10px;">
-                        <label for="link-preset" style="margin: 0; font-weight: bold;"><span aria-hidden="true">📚</span> Load Scenario</label>
+                    <div style="margin-bottom: 10px; padding: 10px; background: rgba(88, 166, 255, 0.1); border: 1px solid #30363d; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
+                        <label for="link-preset" style="margin: 0; font-weight: 600; color: #58a6ff;"><span aria-hidden="true">📚</span> Load Scenario</label>
                         <select id="link-preset" style="flex-grow: 1; padding: 5px;">
                             <option value="">-- Select --</option>
                             <option value="leo">LEO Downlink (S-Band)</option>
@@ -42,7 +42,7 @@
                     <button type="submit"><span aria-hidden="true">🧮</span> Calculate Margin</button>
                 </form>
                 <div id="link-result" aria-live="polite">
-                    <div style="text-align: center; padding: 20px; color: #666; background: #f8f9fa; border-radius: 4px; border: 1px dashed #ccc; margin-top: 20px;">
+                    <div style="text-align: center; padding: 20px; color: #8b949e; background: #0d1117; border-radius: 6px; border: 1px dashed #30363d; margin-top: 20px;">
                         <span style="font-size: 1.5rem; display: block; margin-bottom: 8px;" aria-hidden="true">📡</span>
                         <p style="margin: 0; font-size: 0.9rem;">Submit the form to see link margin analysis.</p>
                     </div>
@@ -52,11 +52,11 @@
             <div class="panel" id="pass-predict-panel">
                 <h2>Pass Prediction</h2>
                 <form id="pass-form">
-                    <p id="tle-hint" style="font-size: 0.9rem; color: #666; margin: 0;"><span aria-hidden="true">✨</span> <strong>Tip:</strong> Paste a full TLE set to auto-fill</p>
+                    <p id="tle-hint" style="font-size: 0.9rem; color: #8b949e; margin: 0;"><span aria-hidden="true">✨</span> <strong>Tip:</strong> Paste a full TLE set to auto-fill</p>
                     <label><abbr title="Two-Line Element set - Line 1">TLE Line 1</abbr> <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995" required aria-describedby="tle-hint" spellcheck="false" autocorrect="off" autocapitalize="off"></label>
                     <label><abbr title="Two-Line Element set - Line 2">TLE Line 2</abbr> <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519" required aria-describedby="tle-hint" spellcheck="false" autocorrect="off" autocapitalize="off"></label>
                     <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
-                        <button type="button" id="locate-btn" style="background: transparent; border: none; color: #0070f3; cursor: pointer; padding: 0; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 4px;">
+                        <button type="button" id="locate-btn" style="background: transparent; border: none; color: #58a6ff; cursor: pointer; padding: 0; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 4px;">
                             <span aria-hidden="true">📍</span> Use My Location
                         </button>
                     </div>
@@ -66,7 +66,7 @@
                     <button type="submit"><span aria-hidden="true">🔭</span> Predict Next Pass</button>
                 </form>
                 <div id="skyplot" aria-live="polite" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
-                    <div style="text-align: center; color: #666;">
+                    <div style="text-align: center; color: #8b949e;">
                         <span style="font-size: 1.5rem; display: block; margin-bottom: 8px;" aria-hidden="true">🛰️</span>
                         <p style="margin: 0; font-size: 0.9rem;">Predict a pass to view the skyplot.</p>
                     </div>
@@ -86,8 +86,8 @@
                     <label><abbr title="Signal-to-Noise Ratio">SNR (dB)</abbr> <input type="number" id="snr" value="15" required step="any"></label>
                     <button type="submit"><span aria-hidden="true">👁️</span> Visualize</button>
                 </form>
-                <div id="iq-empty-state" style="min-height: 300px; display: flex; align-items: center; justify-content: center; border: 1px solid #eee; margin: 20px auto 0; width: 300px; box-sizing: border-box; background: #f8f9fa;">
-                    <div style="text-align: center; color: #666;">
+                <div id="iq-empty-state" style="min-height: 300px; display: flex; align-items: center; justify-content: center; border: 1px solid #30363d; margin: 20px auto 0; width: 300px; box-sizing: border-box; background: #0d1117; border-radius: 8px;">
+                    <div style="text-align: center; color: #8b949e;">
                         <span style="font-size: 1.5rem; display: block; margin-bottom: 8px;" aria-hidden="true">📊</span>
                         <p style="margin: 0; font-size: 0.9rem;">Submit to visualize constellation.</p>
                     </div>

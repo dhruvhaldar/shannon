@@ -31,7 +31,7 @@ function drawSkyplot(points) {
         .attr("class", "grid-circle")
         .attr("r", d => rScale(d))
         .style("fill", "none")
-        .style("stroke", "#ccc")
+        .style("stroke", "#30363d")
         .style("stroke-dasharray", "3,3");
 
     // Draw axis lines (N, E, S, W)
@@ -45,7 +45,7 @@ function drawSkyplot(points) {
         .attr("y1", 0)
         .attr("x2", d => rScale(0) * Math.sin(d * Math.PI / 180))
         .attr("y2", d => -rScale(0) * Math.cos(d * Math.PI / 180))
-        .style("stroke", "#ccc");
+        .style("stroke", "#30363d");
 
     // Add labels
     svg.selectAll(".label")
@@ -57,7 +57,7 @@ function drawSkyplot(points) {
         .attr("dominant-baseline", "middle")
         .text(d => d)
         .style("font-size", "12px")
-        .style("fill", "#333");
+        .style("fill", "#8b949e");
 
     // Line generator
     const line = d3.line()
@@ -68,7 +68,7 @@ function drawSkyplot(points) {
     svg.append("path")
         .datum(points)
         .attr("fill", "none")
-        .attr("stroke", "blue")
+        .attr("stroke", "#58a6ff")
         .attr("stroke-width", 2)
         .attr("d", line);
 
@@ -77,14 +77,14 @@ function drawSkyplot(points) {
         .attr("cx", rScale(points[0].el) * Math.sin(points[0].az * Math.PI / 180))
         .attr("cy", -rScale(points[0].el) * Math.cos(points[0].az * Math.PI / 180))
         .attr("r", 4)
-        .style("fill", "green");
+        .style("fill", "#2ea043");
 
     svg.append("text")
         .attr("x", rScale(points[0].el) * Math.sin(points[0].az * Math.PI / 180) + 5)
         .attr("y", -rScale(points[0].el) * Math.cos(points[0].az * Math.PI / 180) - 5)
         .text("AOS")
         .style("font-size", "10px")
-        .style("fill", "green");
+        .style("fill", "#2ea043");
 
     // Draw LOS (last)
     const last = points[points.length-1];
@@ -92,12 +92,12 @@ function drawSkyplot(points) {
         .attr("cx", rScale(last.el) * Math.sin(last.az * Math.PI / 180))
         .attr("cy", -rScale(last.el) * Math.cos(last.az * Math.PI / 180))
         .attr("r", 4)
-        .style("fill", "red");
+        .style("fill", "#ff7b72");
 
     svg.append("text")
         .attr("x", rScale(last.el) * Math.sin(last.az * Math.PI / 180) + 5)
         .attr("y", -rScale(last.el) * Math.cos(last.az * Math.PI / 180) - 5)
         .text("LOS")
         .style("font-size", "10px")
-        .style("fill", "red");
+        .style("fill", "#ff7b72");
 }

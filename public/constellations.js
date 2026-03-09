@@ -8,11 +8,11 @@ function drawConstellation(iqData) {
     ctx.clearRect(0, 0, width, height);
 
     // Draw background
-    ctx.fillStyle = '#f8f9fa';
+    ctx.fillStyle = '#0d1117';
     ctx.fillRect(0, 0, width, height);
 
     // Draw grid
-    ctx.strokeStyle = '#ccc';
+    ctx.strokeStyle = '#30363d';
     ctx.lineWidth = 1;
 
     // Horizontal
@@ -40,7 +40,7 @@ function drawConstellation(iqData) {
 
     const scale = (width / 2) / scaleMax;
 
-    ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
+    ctx.fillStyle = 'rgba(88, 166, 255, 0.7)';
 
     // Optimization: Use fillRect instead of arc/fill loop for points.
     // Performance impact: ~2x faster rendering for 100k points (96ms vs 194ms).
