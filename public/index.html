@@ -80,7 +80,7 @@
                 <h2>IQ Constellation</h2>
                 <p class="panel-subtext">Simulate digital modulation (BPSK, QPSK, 16-QAM) and visualize signal noise floors.</p>
                 <form id="iq-form">
-                    <label>Scheme
+                    <label><abbr title="Digital Modulation Scheme">Scheme</abbr>
                         <select id="scheme">
                             <option value="BPSK">BPSK</option>
                             <option value="QPSK">QPSK</option>
@@ -301,9 +301,9 @@
                     const info = document.createElement('div');
                     info.className = 'pass-info-card';
                     info.innerHTML = `
-                        <div class="info-item"><strong>AOS:</strong> <span>${result.aos}</span></div>
-                        <div class="info-item"><strong>LOS:</strong> <span>${result.los}</span></div>
-                        <div class="info-item"><strong>Max El:</strong> <span>${result.max_el.toFixed(2)}°</span></div>
+                        <div class="info-item"><strong><abbr title="Acquisition of Signal">AOS</abbr>:</strong> <span>${result.aos}</span></div>
+                        <div class="info-item"><strong><abbr title="Loss of Signal">LOS</abbr>:</strong> <span>${result.los}</span></div>
+                        <div class="info-item"><strong><abbr title="Maximum Elevation">Max El</abbr>:</strong> <span>${result.max_el.toFixed(2)}°</span></div>
                     `;
                     document.getElementById('skyplot').appendChild(info);
                 }
@@ -472,6 +472,7 @@
                 locateBtn.innerHTML = '<span aria-hidden="true">⏳</span> Locating...';
                 locateBtn.disabled = true;
                 locateBtn.style.opacity = '0.7';
+                announceA11y("Locating...");
 
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
@@ -496,6 +497,7 @@
                     (error) => {
                         console.error(error);
                         locateBtn.innerHTML = '<span aria-hidden="true">⚠️</span> Location unavailable';
+                        announceA11y("Location unavailable.");
                         setTimeout(() => {
                             locateBtn.innerHTML = originalHTML;
                             locateBtn.disabled = false;
