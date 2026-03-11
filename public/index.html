@@ -55,7 +55,7 @@
                 <h2>Pass Prediction</h2>
                 <p class="panel-subtext">Predict the path of a satellite across the local sky for antenna tracking.</p>
                 <form id="pass-form">
-                    <p id="tle-hint" style="font-size: 0.9rem; color: #8b949e; margin: 0;"><span aria-hidden="true">✨</span> <strong>Tip:</strong> Paste a full TLE set to auto-fill</p>
+                    <p id="tle-hint" style="font-size: 0.9rem; color: var(--text-dim); margin: 0;"><span aria-hidden="true">✨</span> <strong>Tip:</strong> Paste a full TLE set to auto-fill</p>
                     <label><abbr title="Two-Line Element set - Line 1">TLE Line 1</abbr> <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995" required aria-describedby="tle-hint" spellcheck="false" autocorrect="off" autocapitalize="off"></label>
                     <label><abbr title="Two-Line Element set - Line 2">TLE Line 2</abbr> <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519" required aria-describedby="tle-hint" spellcheck="false" autocorrect="off" autocapitalize="off"></label>
                     <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
@@ -69,7 +69,7 @@
                     <button type="submit"><span aria-hidden="true">🔭</span> Predict Next Pass</button>
                 </form>
                 <div id="skyplot" aria-live="polite" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
-                    <div style="text-align: center; color: #8b949e;">
+                    <div style="text-align: center; color: var(--text-dim);">
                         <span style="font-size: 1.5rem; display: block; margin-bottom: 8px;" aria-hidden="true">🛰️</span>
                         <p style="margin: 0; font-size: 0.9rem;">Predict a pass to view the skyplot.</p>
                     </div>
@@ -103,7 +103,7 @@
             </div>
         </main>
         <footer>
-            &copy; 2026 <a href="https://dhruvhaldar.vercel.app/" target="_blank" rel="noopener noreferrer">Dhruv Haldar</a>. MIT License. | <a href="https://github.com/dhruvhaldar/shannon" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository (opens in a new tab)">GitHub</a>
+            &copy; 2026 <a href="https://dhruvhaldar.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Dhruv Haldar (opens in a new tab)">Dhruv Haldar</a>. MIT License. | <a href="https://github.com/dhruvhaldar/shannon" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository (opens in a new tab)">GitHub</a>
         </footer>
     </div>
     <script src="skyplot.js"></script>
@@ -203,7 +203,7 @@
 
                 const margin = result.margin_db;
                 const isPositive = margin >= 0;
-                const color = isPositive ? '#15803d' : '#b91c1c';
+                const color = isPositive ? 'var(--success)' : 'var(--error)';
                 const icon = isPositive ? '<span aria-hidden="true">✅</span>' : '<span aria-hidden="true">❌</span>';
 
                 let html = `

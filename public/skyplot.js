@@ -59,7 +59,7 @@ function drawSkyplot(points) {
         .attr("dominant-baseline", "middle")
         .text(d => d)
         .style("font-size", "12px")
-        .style("fill", "#8b949e");
+        .style("fill", "var(--text-dim)");
 
     // Line generator
     const line = d3.line()
