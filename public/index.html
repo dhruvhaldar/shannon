@@ -294,15 +294,20 @@
                 const result = await handleResponse(res);
 
                 if(result.message) {
-                    document.getElementById('skyplot').innerText = result.message;
+                    document.getElementById('skyplot').innerHTML = `
+                        <div style="text-align: center; color: var(--text-dim);">
+                            <span style="font-size: 1.5rem; display: block; margin-bottom: 8px;" aria-hidden="true">🌌</span>
+                            <p style="margin: 0; font-size: 0.9rem;">${new Option(result.message).innerHTML}</p>
+                        </div>
+                    `;
                 } else {
                     document.getElementById('skyplot').innerHTML = ''; // Clear
                     drawSkyplot(result.points);
                     const info = document.createElement('div');
                     info.className = 'pass-info-card';
                     info.innerHTML = `
-                        <div class="info-item"><strong><abbr title="Acquisition of Signal">AOS</abbr>:</strong> <span>${result.aos}</span></div>
-                        <div class="info-item"><strong><abbr title="Loss of Signal">LOS</abbr>:</strong> <span>${result.los}</span></div>
+                        <div class="info-item"><strong><abbr title="Acquisition of Signal">AOS</abbr>:</strong> <span>${formatTime(result.aos)}</span></div>
+                        <div class="info-item"><strong><abbr title="Loss of Signal">LOS</abbr>:</strong> <span>${formatTime(result.los)}</span></div>
                         <div class="info-item"><strong><abbr title="Maximum Elevation">Max El</abbr>:</strong> <span>${result.max_el.toFixed(2)}°</span></div>
                     `;
                     document.getElementById('skyplot').appendChild(info);
@@ -398,6 +403,12 @@
             if (bps >= 1e6) return ` (${(bps/1e6).toFixed(2)} Mbps)`;
             if (bps >= 1e3) return ` (${(bps/1e3).toFixed(2)} kbps)`;
             return '';
+        }
+
+        function formatTime(isoString) {
+            if (!isoString) return '';
+            const d = new Date(isoString);
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' on ' + d.toLocaleDateString();
         }
 
         function attachHelper(inputId, helperId, formatter) {
