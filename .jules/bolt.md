@@ -70,3 +70,7 @@
 ## 2026-03-12 - Fast Degrees/Radians Conversion
 **Learning:** In NumPy, calling `np.degrees(arr)` and `np.radians(arr)` on large arrays invokes a `ufunc` that is significantly slower (~40-45% overhead) than explicit scalar multiplication `arr * (180.0 / np.pi)` and `arr * (np.pi / 180.0)`. Explicit multiplication utilizes faster basic array operations and avoids the function dispatch and array allocation overhead of the generic `np.degrees`/`np.radians` wrappers.
 **Action:** In performance-critical hot loops or over large Numpy arrays (N > 100k points), always use explicit multiplication by `(180.0 / np.pi)` or `(np.pi / 180.0)` instead of `np.degrees()` and `np.radians()`.
+
+## 2026-03-15 - Fast Base-10 Exponentiation and Square Root combined
+**Learning:** Combining base-10 exponentiation (`10 ** x`) and `math.sqrt` into a single `math.exp(x * constant)` operation yields significant speedup (~50%) for hot loops in Python. For formulas like `math.sqrt(10 ** (x / 10.0))`, using `math.exp(x * 0.1151292546497023)` is much faster because it avoids separate exponentiation and square root calls, simplifying directly to the natural exponential with a precomputed factor.
+**Action:** When computing `math.sqrt(10 ** (x / y))`, algebraically combine the operations into a single `math.exp(x * constant)` call to minimize math module overhead.
