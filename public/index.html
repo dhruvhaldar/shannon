@@ -594,6 +594,24 @@
         enableMetaEnterSubmit('link-budget-form');
         enableMetaEnterSubmit('pass-form');
         enableMetaEnterSubmit('iq-form');
+
+        // Auto-select input text on focus for faster data entry in pre-filled forms
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                try {
+                    this.select();
+                } catch (e) {
+                    // Ignore elements that do not support selection
+                }
+            });
+            // Prevent the subsequent mouseup event from immediately unselecting the text
+            input.addEventListener('mouseup', function(e) {
+                // If the entire text is already selected, prevent default caret placement
+                if (this.selectionStart === 0 && this.selectionEnd === this.value.length) {
+                    e.preventDefault();
+                }
+            });
+        });
     </script>
 </body>
 </html>

@@ -8,3 +8,7 @@
 ## 2026-03-11 - [Dynamic JS Colors & Contrast]
 **Learning:** Hardcoded hex colors injected by JS for dynamic states (like success/error margins) can cause severe contrast issues in dark themes.
 **Action:** Always prefer applying CSS classes or using existing CSS custom properties (variables like `var(--success)`) for dynamic inline styling to ensure consistent, accessible contrast across themes.
+
+## 2026-03-14 - [Auto-Select Text on Focus for Engineering Forms]
+**Learning:** In technical data-entry applications (like Link Budget calculators or TLE form fields) where `<input>` fields are pre-filled with dense default values (e.g., `2400000000` or `1 25544U...`), forcing users to manually highlight or backspace the existing text before typing a new value introduces significant friction. Adding a simple vanilla JS listener (`input.addEventListener('focus', function() { this.select(); })`) is a massive micro-UX win that drastically speeds up data entry and reduces frustration for power users, mirroring standard spreadsheet behavior.
+**Action:** For dense forms with default values, always implement `this.select()` on focus to allow users to immediately overwrite the data without explicit text highlighting.
