@@ -12,3 +12,7 @@
 ## 2026-03-14 - [Auto-Select Text on Focus for Engineering Forms]
 **Learning:** In technical data-entry applications (like Link Budget calculators or TLE form fields) where `<input>` fields are pre-filled with dense default values (e.g., `2400000000` or `1 25544U...`), forcing users to manually highlight or backspace the existing text before typing a new value introduces significant friction. Adding a simple vanilla JS listener (`input.addEventListener('focus', function() { this.select(); })`) is a massive micro-UX win that drastically speeds up data entry and reduces frustration for power users, mirroring standard spreadsheet behavior.
 **Action:** For dense forms with default values, always implement `this.select()` on focus to allow users to immediately overwrite the data without explicit text highlighting.
+
+## 2026-03-15 - [Monospace Fonts for Fixed-Format Technical Strings]
+**Learning:** For inputs containing highly-structured, fixed-format technical strings where column alignment and character positioning convey important information (such as Two-Line Element sets / TLEs), using standard variable-width fonts makes the data unreadable and hard to verify. Applying a monospace font significantly improves readability and usability by maintaining vertical alignment of the fixed-width data fields.
+**Action:** Always apply `font-family: monospace;` to input fields that accept fixed-format, column-aligned technical data.
