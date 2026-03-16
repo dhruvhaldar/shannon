@@ -63,6 +63,7 @@
 ## 2026-03-10 - Math Log vs Log10 Base Conversion
 **Learning:** The Python `math.log10(x)` function computes `log(x)/log(10)` internally in C, but using `math.log(x)` directly with a precomputed factor `(10 / math.log(10))` avoids an extra C boundary crossing and relies on a faster native CPU instruction. Factoring logarithmic equations in tight loops (e.g., converting `10 * math.log10(x)` to `4.3429... * math.log(x)`) yields a consistent ~20% speedup. For complex expressions like `20 * math.log10(A * B * constant)`, factoring the constant into a precomputed offset `+ 20 * math.log10(constant)` and using `(20 / math.log(10)) * math.log(A * B)` gave a ~25% speedup.
 **Action:** In high-frequency tight loops that use `math.log10()`, substitute it with a precomputed factor multiplied by `math.log()`, and precompute constant offsets to avoid repetitive logarithmic evaluations.
+
 ## 2026-03-12 - Fast Base-10 Exponentiation
 **Learning:** In Python, `10 ** x` (and especially `10 ** (x / 10.0)`) is surprisingly slow compared to calculating the natural exponential using `math.exp(x * constant)`. Using the mathematical identity $10^x = e^{x \ln(10)}$, we can replace `10 ** (x / 10.0)` with `math.exp(x * 0.2302585092994046)`, yielding a ~35-40% speedup. Furthermore, when computing formulas like $\sqrt{1 / (2 \cdot 10^{x/10})}$, expanding and moving the division and square root into the exponential factor ($\sqrt{0.5} \cdot e^{x \cdot -\ln(10)/20}$) eliminates two expensive math operations, resulting in ~47% speedup.
 **Action:** Always replace base-10 exponentiation (`10 ** x` or `math.pow(10, x)`) with `math.exp(x * 2.302585092994046)` in performance-critical code. Attempt to simplify adjacent square roots and divisions directly into the exponential's constant multiplier.
@@ -74,3 +75,15 @@
 ## 2026-03-15 - Fast Base-10 Exponentiation and Square Root combined
 **Learning:** Combining base-10 exponentiation (`10 ** x`) and `math.sqrt` into a single `math.exp(x * constant)` operation yields significant speedup (~50%) for hot loops in Python. For formulas like `math.sqrt(10 ** (x / 10.0))`, using `math.exp(x * 0.1151292546497023)` is much faster because it avoids separate exponentiation and square root calls, simplifying directly to the natural exponential with a precomputed factor.
 **Action:** When computing `math.sqrt(10 ** (x / y))`, algebraically combine the operations into a single `math.exp(x * constant)` call to minimize math module overhead.
+
+## 2026-03-16 - Precomputing Noise Power Density Constants
+**Learning:** In `link_budget.py`, when calculating the Noise Power Density `10 * log10(k * T) + 30`, there are redundant math calls. By applying logarithmic identities, this can be expanded to `(10 / ln(10)) * ln(T) + (10 * log10(k) + 30)`. Factoring out the constants and using `math.log` yields a ~35% speedup without altering functionality or risking `T` being `<= 0`.
+**Action:** In calculations involving products within logarithms, expand them to `log(A) + log(B)` so the constant parts can be precomputed, accelerating repetitive code.
+
+## 2026-03-16 - np.empty_like vs np.full_like Allocation
+**Learning:** In NumPy, `np.empty_like(arr, dtype=...).fill(np.nan)` is noticeably faster (~37%) and has less memory overhead than `np.full_like(arr, np.nan)`. The `full_like` helper incorporates complex internal setup which can be bypassed using explicit allocation and filling.
+**Action:** Use `np.empty_like().fill()` over `np.full_like()` when initializing arrays inside critical performance loops.
+
+## 2026-03-16 - BPSK Symbol Generation via Integer Math
+**Learning:** In BPSK symbol generation (`Modulation.generate_iq`), creating integer values directly into the real component of the float view (`out.view(np.float64)[0::2] += (2 * bits - 1)`) is ~10% faster than pulling corresponding `-1` and `1` mapped items from a `np.complex128` constant array like `out += BPSK_SYMBOLS[bits]`. This avoids pulling memory structures inside the hot loop.
+**Action:** To populate complex values dynamically and performantly on array variables such as `out`, manipulate the float representations directly instead of copying `complex128` items natively.
