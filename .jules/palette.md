@@ -16,3 +16,7 @@
 ## 2026-03-15 - [Monospace Fonts for Fixed-Format Technical Strings]
 **Learning:** For inputs containing highly-structured, fixed-format technical strings where column alignment and character positioning convey important information (such as Two-Line Element sets / TLEs), using standard variable-width fonts makes the data unreadable and hard to verify. Applying a monospace font significantly improves readability and usability by maintaining vertical alignment of the fixed-width data fields.
 **Action:** Always apply `font-family: monospace;` to input fields that accept fixed-format, column-aligned technical data.
+
+## 2026-03-16 - [Prevent Accidental Data Corruption on Number Inputs via Wheel Scrolling]
+**Learning:** In technical forms with many `input[type="number"]` fields, users frequently scroll the page using the mouse wheel or trackpad. If a number input is focused and the cursor happens to be hovering over it during a scroll, the browser natively intercepts the `wheel` event to increment or decrement the input's value. This leads to silent data corruption, as users often do not realize the value has changed while they were simply trying to navigate the page.
+**Action:** Always add a global `wheel` event listener to pages with number inputs that calls `document.activeElement.blur()` if the active element is of type `number`, ensuring the page scrolls gracefully and preventing unintentional data modification.
