@@ -73,7 +73,10 @@ class Modulation:
         if self.scheme == 'BPSK':
             # Points at -1, +1
             bits = self.rng.integers(0, 2, num_symbols)
-            out += self.BPSK_SYMBOLS[bits]
+            # Optimization: For BPSK, generating symbols by directly manipulating the float64
+            # view's real components avoids complex array indexing and addition overhead.
+            # bits*2 - 1 maps 0->-1 and 1->1. This yields a speedup over self.BPSK_SYMBOLS[bits].
+            out_float[0::2] += (bits * 2 - 1)
         elif self.scheme == 'QPSK':
             # Points at (+-1 +- 1j) / sqrt(2)
             ints = self.rng.integers(0, 4, num_symbols)
