@@ -87,3 +87,7 @@
 ## 2026-03-16 - BPSK Symbol Generation via Integer Math
 **Learning:** In BPSK symbol generation (`Modulation.generate_iq`), creating integer values directly into the real component of the float view (`out.view(np.float64)[0::2] += (2 * bits - 1)`) is ~10% faster than pulling corresponding `-1` and `1` mapped items from a `np.complex128` constant array like `out += BPSK_SYMBOLS[bits]`. This avoids pulling memory structures inside the hot loop.
 **Action:** To populate complex values dynamically and performantly on array variables such as `out`, manipulate the float representations directly instead of copying `complex128` items natively.
+
+## 2024-05-28 - BPSK Symbol Generation Optimization
+**Learning:** Generating BPSK symbols (-1, 1) by looking up a precomputed `complex128` array (`self.BPSK_SYMBOLS[bits]`) and adding it to the `complex128` output array is slower than performing simple bit arithmetic (`bits * 2 - 1`) and adding the result directly into the real components of the `float64` view of the output array (`out_float[0::2]`).
+**Action:** When mapping binary sequences to strictly real-valued components in complex arrays, use integer math and manipulate the `float64` view directly instead of performing complex array indexing and addition.
