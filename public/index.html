@@ -8,7 +8,7 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <div id="canvas-container"></div>
+    <div id="canvas-container" aria-hidden="true"></div>
     <div id="a11y-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="container">
@@ -17,7 +17,7 @@
             <p>Space-to-Ground Communication Chain Simulator</p>
         </header>
 
-        <main class="dashboard" id="main-content" tabindex="-1">
+        <main class="dashboard" id="main-content" tabindex="-1" style="outline: none;">
             <div class="panel" id="link-budget-panel">
                 <h2>Link Budget Calculator</h2>
                 <p class="panel-subtext">Visualize the signal power gains and losses from the spacecraft transmitter to the ground receiver.</p>
@@ -480,7 +480,7 @@
                 }
 
                 const originalHTML = locateBtn.innerHTML;
-                locateBtn.innerHTML = '<span aria-hidden="true">⏳</span> Locating...';
+                locateBtn.innerHTML = '<span class="spinner"></span> Locating...';
                 locateBtn.disabled = true;
                 locateBtn.style.opacity = '0.7';
                 announceA11y("Locating...");
