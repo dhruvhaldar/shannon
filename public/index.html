@@ -330,7 +330,7 @@
             btn.disabled = true;
             btn.setAttribute('aria-busy', 'true');
             btn.innerHTML = '<span class="spinner"></span> Visualizing...';
-            document.getElementById('iq-status').innerText = '';
+            document.getElementById('iq-status').innerHTML = '';
 
             try {
                 const data = {
@@ -350,7 +350,7 @@
                     document.getElementById('iq-empty-state').style.display = 'none';
                     document.getElementById('iq-canvas').style.display = 'block';
                     drawConstellation(result.iq_data);
-                    document.getElementById('iq-status').innerText = 'Constellation updated.';
+                    document.getElementById('iq-status').innerHTML = '<span aria-hidden="true">✅</span> Constellation updated.';
                 } else {
                     // Backend returns {error: "..."} on some logic errors even with 200 OK?
                     // Check logic in index.py:
