@@ -107,13 +107,20 @@ class GroundStation:
             visible = u > 0
 
             if not np.any(visible):
-                nan_arr = np.full_like(u, np.nan)
+                # Optimization: np.empty_like().fill() is faster than np.full_like()
+                # because it avoids the overhead of internal array setup in np.full_like.
+                nan_arr = np.empty_like(u)
+                nan_arr.fill(np.nan)
                 return nan_arr, nan_arr, nan_arr
 
             # Initialize results with NaNs
-            az = np.full_like(u, np.nan)
-            el = np.full_like(u, np.nan)
-            range_km = np.full_like(u, np.nan)
+            # Optimization: np.empty_like().fill() is faster than np.full_like()
+            az = np.empty_like(u)
+            az.fill(np.nan)
+            el = np.empty_like(u)
+            el.fill(np.nan)
+            range_km = np.empty_like(u)
+            range_km.fill(np.nan)
 
             # For visible points, we MUST do the full ECEF conversion to get Azimuth and Range
             # But we only do it for the visible subset.
