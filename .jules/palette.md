@@ -24,3 +24,7 @@
 ## 2026-03-17 - [Accessible Landmark Regions for Multi-Form Dashboards]
 **Learning:** In dashboards containing multiple distinct tools or calculators on a single page, generic `<form>` elements are not easily distinguishable to screen reader users jumping between landmarks. Adding an `id` to the panel's heading and using `aria-labelledby` on the `<form>` converts it into an accessible landmark region, explicitly associating the form controls with the tool's context. Furthermore, if the application has a feature to sync state to the URL (e.g. `syncFormToUrl`), ensure it is symmetrically applied across *all* forms in the suite to avoid inconsistent user expectations.
 **Action:** Always use `aria-labelledby` on `<form>` elements in multi-tool dashboards to create distinct landmark regions, and ensure UX features like URL state syncing are universally applied across similar components.
+
+## 2026-03-22 - [Auto-Submit Shared URL States]
+**Learning:** When a dashboard supports sharing state via URLs, loading the form values on initial page load is good, but forcing the user to manually click 'Submit' again creates an unnecessary step and an initially blank/empty state. Automatically submitting the form if it was populated from the URL provides immediate value and a smoother experience for users clicking shared links.
+**Action:** Always auto-submit forms on load if their state was successfully populated from URL parameters.
