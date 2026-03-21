@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SHANNON - Space-to-Ground Communication Chain Simulator</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
@@ -127,7 +128,7 @@
         function loadFormFromUrl(formId) {
             const params = new URLSearchParams(window.location.search);
             const form = document.getElementById(formId);
-            if (!form) return;
+            if (!form) return false;
             let updated = false;
             Array.from(form.elements).forEach(el => {
                 if (el.id && params.has(el.id)) {
@@ -136,6 +137,7 @@
                     updated = true;
                 }
             });
+            return updated;
         }
 
         // Helper for accessible error rendering
@@ -561,9 +563,15 @@
         }
 
         // --- Initialize from URL ---
-        loadFormFromUrl('link-budget-form');
-        loadFormFromUrl('pass-form');
-        loadFormFromUrl('iq-form');
+        if (loadFormFromUrl('link-budget-form')) {
+            document.getElementById('link-budget-form').requestSubmit();
+        }
+        if (loadFormFromUrl('pass-form')) {
+            document.getElementById('pass-form').requestSubmit();
+        }
+        if (loadFormFromUrl('iq-form')) {
+            document.getElementById('iq-form').requestSubmit();
+        }
 
         // --- Keyboard Shortcuts ---
         function enableMetaEnterSubmit(formId) {
