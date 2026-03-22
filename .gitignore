@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
 *.png
+!assets/*.png
 benchmark_*.py
 get_baseline.py
 .venv/

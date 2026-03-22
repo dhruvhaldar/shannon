@@ -67,6 +67,8 @@ link.plot_waterfall()
 ```
 
 **Artifact Output:**
+
+![Link Budget Waterfall](assets/link_budget_waterfall.png)
 *Figure 1: Link Budget Waterfall. The chart tracks the signal power (dBm) through the chain. The Free Space Path Loss (FSPL) causes the massive drop, which must be recovered by the Ground Station Antenna Gain ($G_{rx}$) to stay above the Receiver Sensitivity floor.*
 
 ### 2. Satellite Pass Prediction (Skyplot)
@@ -89,6 +91,8 @@ pass_data.plot_sky()
 ```
 
 **Artifact Output:**
+
+![Satellite Pass Skyplot](assets/satellite_pass_skyplot.png)
 *Figure 2: Ground Track Polar Plot. The center represents the zenith ($90^\circ$ elevation). The curve shows the satellite's trajectory from AOS (Acquisition of Signal) to LOS (Loss of Signal). The red zone indicates the "Keyhole" (high elevation tracking difficulty) or horizon mask.*
 
 ### 3. Doppler Shift Simulation
@@ -96,6 +100,8 @@ pass_data.plot_sky()
 Calculates the frequency shift $\Delta f$ caused by the relative velocity of the spacecraft.
 
 **Artifact Output:**
+
+![IQ Constellation](assets/iq_constellation.png)
 *Figure 3: The "S-Curve". As the satellite approaches, the frequency is shifted higher (Blue shift). At the Time of Closest Approach (TCA), the shift crosses zero. As it recedes, the frequency shifts lower (Red shift). Ground stations must actively track this changing frequency.*
 
 ## 🧪 Testing Strategy
