@@ -7,3 +7,4 @@ matplotlib
 pydantic
 requests
 pytest
+pytest-playwright
