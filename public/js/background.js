@@ -1,5 +1,6 @@
 let scene, camera, renderer, stars, particles;
 let animationId; // Track animation frame ID
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 function init() {
     const container = document.getElementById('canvas-container');
@@ -90,7 +91,7 @@ function onWindowResize() {
 function animate() {
     animationId = requestAnimationFrame(animate);
 
-    if (stars) {
+    if (stars && !prefersReducedMotion.matches) {
         stars.rotation.y += 0.0002;
         stars.rotation.x += 0.0001;
     }

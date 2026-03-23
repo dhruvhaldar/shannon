@@ -28,3 +28,7 @@
 ## 2026-03-22 - [Auto-Submit Shared URL States]
 **Learning:** When a dashboard supports sharing state via URLs, loading the form values on initial page load is good, but forcing the user to manually click 'Submit' again creates an unnecessary step and an initially blank/empty state. Automatically submitting the form if it was populated from the URL provides immediate value and a smoother experience for users clicking shared links.
 **Action:** Always auto-submit forms on load if their state was successfully populated from URL parameters.
+
+## 2026-03-23 - [Manual prefers-reduced-motion Checks in WebGL/Canvas]
+**Learning:** While CSS media queries naturally handle CSS animations and transitions for users with `prefers-reduced-motion: reduce`, JavaScript-driven animations (like `requestAnimationFrame` loops for WebGL backgrounds or Canvas particles) bypass these CSS protections entirely. This can cause severe motion sickness for vulnerable users even when their OS settings request reduced motion.
+**Action:** Always instantiate `window.matchMedia('(prefers-reduced-motion: reduce)')` and explicitly check `.matches` inside JavaScript animation loops to selectively pause or disable intensive custom rendering logic.
