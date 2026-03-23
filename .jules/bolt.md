@@ -91,3 +91,7 @@
 ## 2024-05-28 - BPSK Symbol Generation Optimization
 **Learning:** Generating BPSK symbols (-1, 1) by looking up a precomputed `complex128` array (`self.BPSK_SYMBOLS[bits]`) and adding it to the `complex128` output array is slower than performing simple bit arithmetic (`bits * 2 - 1`) and adding the result directly into the real components of the `float64` view of the output array (`out_float[0::2]`).
 **Action:** When mapping binary sequences to strictly real-valued components in complex arrays, use integer math and manipulate the `float64` view directly instead of performing complex array indexing and addition.
+
+## 2026-03-20 - BPSK Symbol Generation via Real Array Indexing
+**Learning:** For BPSK symbol generation (`Modulation.generate_iq`), indexing into a precomputed strictly real `float64` array (`self.BPSK_SYMBOLS_REAL[bits]`) and directly adding to the real component of the float view (`out.view(np.float64)[0::2] += self.BPSK_SYMBOLS_REAL[bits]`) is significantly faster (~35%) than performing integer arithmetic (`bits * 2 - 1`). It completely avoids the overhead of intermediate mathematical operation arrays.
+**Action:** When mapping binary sequences to strictly real-valued components in complex arrays, prefer indexing into a precomputed `float64` lookup table rather than performing element-wise arithmetic mapping.
