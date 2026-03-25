@@ -238,11 +238,16 @@
                         navigator.clipboard.writeText(report).then(() => {
                             const original = copyBtn.innerHTML;
                             copyBtn.innerHTML = '<span aria-hidden="true">✅</span>';
-                            setTimeout(() => copyBtn.innerHTML = original, 2000);
+                            copyBtn.disabled = true;
+                            setTimeout(() => { copyBtn.innerHTML = original; copyBtn.disabled = false; }, 2000);
                             announceA11y("Copied to clipboard.");
                         }).catch(err => {
                             console.error('Copy failed:', err);
-                            alert('Failed to copy to clipboard');
+                            const original = copyBtn.innerHTML;
+                            copyBtn.innerHTML = '<span aria-hidden="true">⚠️</span>';
+                            copyBtn.disabled = true;
+                            setTimeout(() => { copyBtn.innerHTML = original; copyBtn.disabled = false; }, 2000);
+                            announceA11y("Failed to copy to clipboard.");
                         });
                     });
                 }
@@ -254,9 +259,17 @@
                         navigator.clipboard.writeText(url).then(() => {
                             const original = copyUrlBtn.innerHTML;
                             copyUrlBtn.innerHTML = '<span aria-hidden="true">✅</span>';
-                            setTimeout(() => copyUrlBtn.innerHTML = original, 2000);
+                            copyUrlBtn.disabled = true;
+                            setTimeout(() => { copyUrlBtn.innerHTML = original; copyUrlBtn.disabled = false; }, 2000);
                             announceA11y("Copied to clipboard.");
-                        }).catch(err => console.error('Copy failed:', err));
+                        }).catch(err => {
+                            console.error('Copy failed:', err);
+                            const original = copyUrlBtn.innerHTML;
+                            copyUrlBtn.innerHTML = '<span aria-hidden="true">⚠️</span>';
+                            copyUrlBtn.disabled = true;
+                            setTimeout(() => { copyUrlBtn.innerHTML = original; copyUrlBtn.disabled = false; }, 2000);
+                            announceA11y("Failed to copy link to clipboard.");
+                        });
                     });
                 }
             } catch (err) {
@@ -482,12 +495,16 @@
         const locateBtn = document.getElementById('locate-btn');
         if (locateBtn) {
             locateBtn.addEventListener('click', () => {
+                const originalHTML = locateBtn.innerHTML;
+
                 if (!navigator.geolocation) {
-                    alert('Geolocation is not supported by your browser.');
+                    locateBtn.innerHTML = '<span aria-hidden="true">⚠️</span> Not Supported';
+                    locateBtn.disabled = true;
+                    announceA11y("Geolocation is not supported by your browser.");
+                    setTimeout(() => { locateBtn.innerHTML = originalHTML; locateBtn.disabled = false; }, 2000);
                     return;
                 }
 
-                const originalHTML = locateBtn.innerHTML;
                 locateBtn.innerHTML = '<span class="spinner"></span> Locating...';
                 locateBtn.disabled = true;
                 locateBtn.style.opacity = '0.7';
