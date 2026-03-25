@@ -32,3 +32,7 @@
 ## 2026-03-23 - [Manual prefers-reduced-motion Checks in WebGL/Canvas]
 **Learning:** While CSS media queries naturally handle CSS animations and transitions for users with `prefers-reduced-motion: reduce`, JavaScript-driven animations (like `requestAnimationFrame` loops for WebGL backgrounds or Canvas particles) bypass these CSS protections entirely. This can cause severe motion sickness for vulnerable users even when their OS settings request reduced motion.
 **Action:** Always instantiate `window.matchMedia('(prefers-reduced-motion: reduce)')` and explicitly check `.matches` inside JavaScript animation loops to selectively pause or disable intensive custom rendering logic.
+
+## 2026-03-25 - [Non-Blocking Error Feedback over Native Alerts]
+**Learning:** Using native `alert()` for non-critical UI errors (like failed clipboard operations or missing browser APIs such as Geolocation) creates a disruptive, thread-blocking user experience that breaks immersion and can be visually discordant with custom dark-mode themes.
+**Action:** Replace blocking `alert()` calls with temporary, inline visual feedback on the interacting element (e.g., swapping a button's innerHTML to a warning icon) combined with a screen reader announcement via an aria-live region (e.g., `announceA11y`).
