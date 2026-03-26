@@ -95,3 +95,7 @@
 ## 2026-03-20 - BPSK Symbol Generation via Real Array Indexing
 **Learning:** For BPSK symbol generation (`Modulation.generate_iq`), indexing into a precomputed strictly real `float64` array (`self.BPSK_SYMBOLS_REAL[bits]`) and directly adding to the real component of the float view (`out.view(np.float64)[0::2] += self.BPSK_SYMBOLS_REAL[bits]`) is significantly faster (~35%) than performing integer arithmetic (`bits * 2 - 1`). It completely avoids the overhead of intermediate mathematical operation arrays.
 **Action:** When mapping binary sequences to strictly real-valued components in complex arrays, prefer indexing into a precomputed `float64` lookup table rather than performing element-wise arithmetic mapping.
+
+## 2026-03-22 - Fast Scalar Complementary Error Function (erfc)
+**Learning:** For scalar complementary error function calculations (`erfc`), importing and using `scipy.special.erfc` introduces unnecessary overhead due to SciPy's ufunc (universal function) dispatch and array handling logic. Calling `math.erfc(x)` from the standard library is roughly 2x faster for scalar inputs because it interfaces directly with the native C math library.
+**Action:** When performing scalar mathematical operations like `erfc`, use the Python `math` standard library instead of `scipy.special` or `numpy` equivalents to avoid array dispatch overhead. This also has the added benefit of potentially removing `scipy` as a large external dependency if no other advanced mathematical functions are required.
