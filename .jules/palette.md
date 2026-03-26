@@ -36,3 +36,7 @@
 ## 2026-03-25 - [Non-Blocking Error Feedback over Native Alerts]
 **Learning:** Using native `alert()` for non-critical UI errors (like failed clipboard operations or missing browser APIs such as Geolocation) creates a disruptive, thread-blocking user experience that breaks immersion and can be visually discordant with custom dark-mode themes.
 **Action:** Replace blocking `alert()` calls with temporary, inline visual feedback on the interacting element (e.g., swapping a button's innerHTML to a warning icon) combined with a screen reader announcement via an aria-live region (e.g., `announceA11y`).
+
+## 2026-03-26 - [Visual Keyboard Shortcuts]
+**Learning:** Relying solely on `aria-keyshortcuts` or `title` tooltips for keyboard shortcuts leaves the functionality undiscoverable to most users. Explicitly visualizing the shortcut using a `<span>` element bridges the gap between hidden accessibility attributes and actual user discoverability. Since the shortcut text is visually decorative and already announced by screen readers via `aria-keyshortcuts`, it should be marked with `aria-hidden="true"` to prevent redundant reading.
+**Action:** Always complement `aria-keyshortcuts` with a visible `<span aria-hidden="true">` hint within the actionable element, dynamically rendering the correct OS shortcut (e.g. ⌘ vs Ctrl).
