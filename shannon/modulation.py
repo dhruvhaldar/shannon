@@ -4,6 +4,9 @@ import numpy as np
 class Modulation:
     # Precompute QPSK constellation points
     QPSK_SYMBOLS = np.exp(1j * (np.pi/4 + np.arange(4) * np.pi/2))
+    # Precompute strictly real float arrays for QPSK hot loop indexing optimization
+    QPSK_SYMBOLS_REAL = QPSK_SYMBOLS.real
+    QPSK_SYMBOLS_IMAG = QPSK_SYMBOLS.imag
 
     # Precompute BPSK constellation points: -1, +1
     BPSK_SYMBOLS = np.array([-1, 1], dtype=np.complex128)
@@ -17,6 +20,9 @@ class Modulation:
     _qam_vals = np.array([-3, -1, 1, 3])
     _qam_real, _qam_imag = np.meshgrid(_qam_vals, _qam_vals)
     QAM16_SYMBOLS = (_qam_real + 1j * _qam_imag).flatten() / math.sqrt(10)
+    # Precompute strictly real arrays for 16-QAM hot loop indexing optimization
+    QAM16_SYMBOLS_REAL = QAM16_SYMBOLS.real
+    QAM16_SYMBOLS_IMAG = QAM16_SYMBOLS.imag
 
     def __init__(self, scheme='BPSK', seed=None):
         self.scheme = scheme
@@ -82,11 +88,17 @@ class Modulation:
         elif self.scheme == 'QPSK':
             # Points at (+-1 +- 1j) / sqrt(2)
             ints = self.rng.integers(0, 4, num_symbols)
-            out += self.QPSK_SYMBOLS[ints]
+            # Optimization: For QPSK, generating symbols by indexing into precomputed
+            # strictly real/imag float64 arrays and adding to the float view is faster
+            # than complex array addition (`out += self.QPSK_SYMBOLS[ints]`).
+            out_float[0::2] += self.QPSK_SYMBOLS_REAL[ints]
+            out_float[1::2] += self.QPSK_SYMBOLS_IMAG[ints]
         elif self.scheme == '16-QAM':
             # Grid -3, -1, 1, 3 per axis, normalized
             ints = self.rng.integers(0, 16, num_symbols)
-            out += self.QAM16_SYMBOLS[ints]
+            # Optimization: Avoid complex array allocation inside hot loop
+            out_float[0::2] += self.QAM16_SYMBOLS_REAL[ints]
+            out_float[1::2] += self.QAM16_SYMBOLS_IMAG[ints]
         else:
              raise ValueError(f"Unknown modulation scheme: {self.scheme}")
 
