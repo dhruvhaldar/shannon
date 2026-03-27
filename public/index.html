@@ -601,8 +601,15 @@
             if (btn) {
                 // Add accessibility and tooltip hints
                 const currentTitle = btn.getAttribute('title') || '';
-                btn.setAttribute('title', (currentTitle ? currentTitle + ' ' : '') + '(Ctrl+Enter to submit)');
+                const shortcutKey = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent) ? '⌘↵' : 'Ctrl+↵';
+                btn.setAttribute('title', (currentTitle ? currentTitle + ' ' : '') + '(' + shortcutKey + ' to submit)');
                 btn.setAttribute('aria-keyshortcuts', 'Control+Enter Meta+Enter');
+
+                // Add visual shortcut hint
+                const shortcutHint = document.createElement('span');
+                shortcutHint.textContent = ' (' + shortcutKey + ')';
+                shortcutHint.setAttribute('aria-hidden', 'true');
+                btn.appendChild(shortcutHint);
             }
 
             form.addEventListener('keydown', (e) => {
