@@ -40,3 +40,6 @@
 ## 2026-03-26 - [Visual Keyboard Shortcuts]
 **Learning:** Relying solely on `aria-keyshortcuts` or `title` tooltips for keyboard shortcuts leaves the functionality undiscoverable to most users. Explicitly visualizing the shortcut using a `<span>` element bridges the gap between hidden accessibility attributes and actual user discoverability. Since the shortcut text is visually decorative and already announced by screen readers via `aria-keyshortcuts`, it should be marked with `aria-hidden="true"` to prevent redundant reading.
 **Action:** Always complement `aria-keyshortcuts` with a visible `<span aria-hidden="true">` hint within the actionable element, dynamically rendering the correct OS shortcut (e.g. ⌘ vs Ctrl).
+## 2026-03-28 - Native CSS Variable Inheritance in SVG via D3
+**Learning:** When generating interactive SVG graphics dynamically using D3 or vanilla JS, using native CSS variables (e.g., `var(--success)`) within inline `.style()` or `.attr()` declarations perfectly inherits colors and supports native browser accessibility contrast without requiring manual evaluation via `getComputedStyle` or explicit theme-switch listeners.
+**Action:** Always prefer setting `var(--theme-token)` instead of hardcoded hex colors for dynamically injected SVG inline styles/attributes to guarantee dark/light mode maintainability.
