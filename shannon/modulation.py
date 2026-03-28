@@ -80,14 +80,17 @@ class Modulation:
 
         if self.scheme == 'BPSK':
             # Points at -1, +1
-            bits = self.rng.integers(0, 2, num_symbols)
+            # Optimization: Using dtype=np.int8 instead of default int64 is much faster
+            # and uses less memory bandwidth for small integer generation.
+            bits = self.rng.integers(0, 2, num_symbols, dtype=np.int8)
             # Optimization: For BPSK, generating symbols by indexing into a precomputed float64 array
             # mapping 0->-1.0 and 1->1.0 is ~35% faster than doing integer arithmetic (bits*2 - 1)
             # and avoids creating intermediate arrays while still manipulating the float64 view.
             out_float[0::2] += self.BPSK_SYMBOLS_REAL[bits]
         elif self.scheme == 'QPSK':
             # Points at (+-1 +- 1j) / sqrt(2)
-            ints = self.rng.integers(0, 4, num_symbols)
+            # Optimization: Using dtype=np.int8 instead of default int64 is much faster.
+            ints = self.rng.integers(0, 4, num_symbols, dtype=np.int8)
             # Optimization: For QPSK, generating symbols by indexing into precomputed
             # strictly real/imag float64 arrays and adding to the float view is faster
             # than complex array addition (`out += self.QPSK_SYMBOLS[ints]`).
@@ -95,7 +98,8 @@ class Modulation:
             out_float[1::2] += self.QPSK_SYMBOLS_IMAG[ints]
         elif self.scheme == '16-QAM':
             # Grid -3, -1, 1, 3 per axis, normalized
-            ints = self.rng.integers(0, 16, num_symbols)
+            # Optimization: Using dtype=np.int8 instead of default int64 is much faster.
+            ints = self.rng.integers(0, 16, num_symbols, dtype=np.int8)
             # Optimization: Avoid complex array allocation inside hot loop
             out_float[0::2] += self.QAM16_SYMBOLS_REAL[ints]
             out_float[1::2] += self.QAM16_SYMBOLS_IMAG[ints]

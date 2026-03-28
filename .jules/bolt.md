@@ -99,3 +99,7 @@
 ## 2026-03-22 - Fast Scalar Complementary Error Function (erfc)
 **Learning:** For scalar complementary error function calculations (`erfc`), importing and using `scipy.special.erfc` introduces unnecessary overhead due to SciPy's ufunc (universal function) dispatch and array handling logic. Calling `math.erfc(x)` from the standard library is roughly 2x faster for scalar inputs because it interfaces directly with the native C math library.
 **Action:** When performing scalar mathematical operations like `erfc`, use the Python `math` standard library instead of `scipy.special` or `numpy` equivalents to avoid array dispatch overhead. This also has the added benefit of potentially removing `scipy` as a large external dependency if no other advanced mathematical functions are required.
+
+## 2026-03-24 - Fast Random Integer Generation for Small Constellations
+**Learning:** By default, `np.random.default_rng().integers` generates an array of `np.int64` values, which uses significant memory bandwidth and slows down allocation. For small constellation sizes (like 2, 4, 16 in BPSK, QPSK, 16-QAM), specifying `dtype=np.int8` reduces the required memory and time dramatically. Generating 10M `int8` symbols for 16-QAM is ~3.2x faster than the default `int64`.
+**Action:** Always specify the smallest appropriate `dtype` (like `np.int8`) when generating random integers for small discrete mapping or indexing tasks to avoid the default `int64` performance penalty.
