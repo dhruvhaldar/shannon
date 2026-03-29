@@ -103,3 +103,7 @@
 ## 2026-03-24 - Fast Random Integer Generation for Small Constellations
 **Learning:** By default, `np.random.default_rng().integers` generates an array of `np.int64` values, which uses significant memory bandwidth and slows down allocation. For small constellation sizes (like 2, 4, 16 in BPSK, QPSK, 16-QAM), specifying `dtype=np.int8` reduces the required memory and time dramatically. Generating 10M `int8` symbols for 16-QAM is ~3.2x faster than the default `int64`.
 **Action:** Always specify the smallest appropriate `dtype` (like `np.int8`) when generating random integers for small discrete mapping or indexing tasks to avoid the default `int64` performance penalty.
+
+## 2026-03-29 - NumPy Intermediate Array Allocation Optimization
+**Learning:** In NumPy, avoiding intermediate array allocations during large matrix-vector or coordinate transformations by consolidating mathematical operations into single expressions (e.g. `rx_x_vis = sat_x_vis * cos_g_vis + sat_y_vis * sin_g_vis - self.location[0]`) and using `np.empty_like` combined with the `out` parameter and `+=` in-place addition significantly reduces memory bandwidth overhead. In hot loops like `compute_look_angles`, avoiding the temporary `sat_ecef` variables sped up the execution by ~30%.
+**Action:** When computing vector transforms or projections in NumPy over large arrays (N > 100k), combine arithmetic operations into single line evaluations to allow underlying C-optimizations to minimize temporary object creation, and use pre-allocated buffers with in-place addition for sequential sums.

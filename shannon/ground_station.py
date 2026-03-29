@@ -133,21 +133,26 @@ class GroundStation:
             sat_y_vis = sat_y[visible]
             sat_z_vis = sat_z[visible]
 
-            sat_ecef_x_vis = sat_x_vis * cos_g_vis + sat_y_vis * sin_g_vis
-            sat_ecef_y_vis = -sat_x_vis * sin_g_vis + sat_y_vis * cos_g_vis
-            sat_ecef_z_vis = sat_z_vis
-
-            rx_x_vis = sat_ecef_x_vis - self.location[0]
-            rx_y_vis = sat_ecef_y_vis - self.location[1]
-            rx_z_vis = sat_ecef_z_vis - self.location[2]
+            # Optimization: directly compute rx_*_vis in a single expression to avoid intermediate sat_ecef_*_vis array allocations
+            rx_x_vis = sat_x_vis * cos_g_vis + sat_y_vis * sin_g_vis - self.location[0]
+            rx_y_vis = -sat_x_vis * sin_g_vis + sat_y_vis * cos_g_vis - self.location[1]
+            rx_z_vis = sat_z_vis - self.location[2]
 
             u_vis = u[visible]
 
             # Optimization: explicit multiplication (x*x) avoids the overhead of np.power(x, 2) allocation (~25% speedup)
             range_km_vis = np.sqrt(rx_x_vis*rx_x_vis + rx_y_vis*rx_y_vis + rx_z_vis*rx_z_vis)
 
-            e_vis = rx_x_vis * self.R[0, 0] + rx_y_vis * self.R[0, 1] + rx_z_vis * self.R[0, 2]
-            n_vis = rx_x_vis * self.R[1, 0] + rx_y_vis * self.R[1, 1] + rx_z_vis * self.R[1, 2]
+            # Optimization: Pre-allocate target arrays and use in-place addition to avoid intermediate array allocations
+            e_vis = np.empty_like(rx_x_vis)
+            np.multiply(rx_x_vis, self.R[0, 0], out=e_vis)
+            e_vis += rx_y_vis * self.R[0, 1]
+            e_vis += rx_z_vis * self.R[0, 2]
+
+            n_vis = np.empty_like(rx_x_vis)
+            np.multiply(rx_x_vis, self.R[1, 0], out=n_vis)
+            n_vis += rx_y_vis * self.R[1, 1]
+            n_vis += rx_z_vis * self.R[1, 2]
 
             # Optimization: Explicit multiplication by (180.0 / np.pi) avoids the overhead
             # of the np.degrees ufunc allocation, yielding a ~40% speedup for large arrays.
