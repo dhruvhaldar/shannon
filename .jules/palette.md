@@ -43,3 +43,7 @@
 ## 2026-03-28 - Native CSS Variable Inheritance in SVG via D3
 **Learning:** When generating interactive SVG graphics dynamically using D3 or vanilla JS, using native CSS variables (e.g., `var(--success)`) within inline `.style()` or `.attr()` declarations perfectly inherits colors and supports native browser accessibility contrast without requiring manual evaluation via `getComputedStyle` or explicit theme-switch listeners.
 **Action:** Always prefer setting `var(--theme-token)` instead of hardcoded hex colors for dynamically injected SVG inline styles/attributes to guarantee dark/light mode maintainability.
+
+## 2026-03-30 - [Contextual Descriptions for Form Landmarks]
+**Learning:** While `aria-labelledby` on `<form>` elements effectively creates named landmark regions, the contextual descriptions immediately following the headings (e.g., `<p class="panel-subtext">`) are skipped when screen reader users navigate directly by landmarks. This deprives users of critical context about what the tool actually does.
+**Action:** Always complement `aria-labelledby` with `aria-describedby` pointing to the subtitle/subtext IDs to ensure screen reader users receive the full context of the tool when landing on the form landmark.

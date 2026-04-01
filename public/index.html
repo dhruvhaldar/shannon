@@ -21,8 +21,8 @@
         <main class="dashboard" id="main-content" tabindex="-1" style="outline: none;">
             <div class="panel" id="link-budget-panel">
                 <h2 id="link-budget-heading">Link Budget Calculator</h2>
-                <p class="panel-subtext">Visualize the signal power gains and losses from the spacecraft transmitter to the ground receiver.</p>
-                <form id="link-budget-form" aria-labelledby="link-budget-heading">
+                <p id="link-budget-desc" class="panel-subtext">Visualize the signal power gains and losses from the spacecraft transmitter to the ground receiver.</p>
+                <form id="link-budget-form" aria-labelledby="link-budget-heading" aria-describedby="link-budget-desc">
                     <div style="margin-bottom: 10px; padding: 10px; background: rgba(255, 176, 0, 0.05); border: 1px solid var(--border-muted); border-radius: 6px; display: flex; align-items: center; gap: 10px;">
                         <label for="link-preset" style="margin: 0; font-weight: 600; color: var(--accent-amber);"><span aria-hidden="true">📚</span> Load Scenario</label>
                         <select id="link-preset" style="flex-grow: 1; padding: 5px;">
@@ -54,8 +54,8 @@
 
             <div class="panel" id="pass-predict-panel">
                 <h2 id="pass-predict-heading">Pass Prediction</h2>
-                <p class="panel-subtext">Predict the path of a satellite across the local sky for antenna tracking.</p>
-                <form id="pass-form" aria-labelledby="pass-predict-heading">
+                <p id="pass-predict-desc" class="panel-subtext">Predict the path of a satellite across the local sky for antenna tracking.</p>
+                <form id="pass-form" aria-labelledby="pass-predict-heading" aria-describedby="pass-predict-desc">
                     <p id="tle-hint" style="font-size: 0.9rem; color: var(--text-dim); margin: 0;"><span aria-hidden="true">✨</span> <strong>Tip:</strong> Paste a full TLE set to auto-fill</p>
                     <label for="tle1"><abbr title="Two-Line Element set - Line 1">TLE Line 1</abbr> <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995" required aria-describedby="tle-hint" spellcheck="false" autocorrect="off" autocapitalize="off" style="font-family: monospace;"></label>
                     <label for="tle2"><abbr title="Two-Line Element set - Line 2">TLE Line 2</abbr> <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519" required aria-describedby="tle-hint" spellcheck="false" autocorrect="off" autocapitalize="off" style="font-family: monospace;"></label>
@@ -79,8 +79,8 @@
 
             <div class="panel" id="iq-panel">
                 <h2 id="iq-heading">IQ Constellation</h2>
-                <p class="panel-subtext">Simulate digital modulation (BPSK, QPSK, 16-QAM) and visualize signal noise floors.</p>
-                <form id="iq-form" aria-labelledby="iq-heading">
+                <p id="iq-desc" class="panel-subtext">Simulate digital modulation (BPSK, QPSK, 16-QAM) and visualize signal noise floors.</p>
+                <form id="iq-form" aria-labelledby="iq-heading" aria-describedby="iq-desc">
                     <label for="scheme"><abbr title="Digital Modulation Scheme">Scheme</abbr>
                         <select id="scheme">
                             <option value="BPSK">BPSK</option>
