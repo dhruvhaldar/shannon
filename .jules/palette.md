@@ -47,3 +47,7 @@
 ## 2026-03-30 - [Contextual Descriptions for Form Landmarks]
 **Learning:** While `aria-labelledby` on `<form>` elements effectively creates named landmark regions, the contextual descriptions immediately following the headings (e.g., `<p class="panel-subtext">`) are skipped when screen reader users navigate directly by landmarks. This deprives users of critical context about what the tool actually does.
 **Action:** Always complement `aria-labelledby` with `aria-describedby` pointing to the subtitle/subtext IDs to ensure screen reader users receive the full context of the tool when landing on the form landmark.
+
+## 2026-04-01 - [Synchronizing Native Chrome with Custom Dark Themes]
+**Learning:** When building a heavily themed dark-mode application (like Obsidian black), leaving out the `<meta name="theme-color">` and CSS `color-scheme: dark` declarations causes a jarring mismatch between the custom UI and the browser's native components. Mobile browsers will display stark white status bars, and desktop browsers will render white scrollbars, stark white `<select>` dropdown menus, and glaring white HTML5 validation tooltips, breaking immersion completely. Furthermore, default blue `::selection` highlighting clashes with custom warm palettes.
+**Action:** Always explicitly define `color-scheme: dark;` on the `:root` pseudo-class and a matching `<meta name="theme-color">` to ensure the OS and browser natively adapt their chrome to match the application's dark theme. Customize `::selection` highlighting to match brand accents.

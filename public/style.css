@@ -1,4 +1,5 @@
 :root {
+    color-scheme: dark;
     --bg-obsidian: #050505;
     --panel-bg: #121212;
     --accent-amber: #ffb000;
@@ -16,6 +17,10 @@ body {
     padding: 0;
     background-color: var(--bg-obsidian);
     color: var(--text-main);
+}
+
+::selection {
+    background: rgba(255, 176, 0, 0.3);
 }
 
 #canvas-container {
