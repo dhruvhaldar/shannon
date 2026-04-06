@@ -47,3 +47,7 @@
 ## 2026-03-30 - [Contextual Descriptions for Form Landmarks]
 **Learning:** While `aria-labelledby` on `<form>` elements effectively creates named landmark regions, the contextual descriptions immediately following the headings (e.g., `<p class="panel-subtext">`) are skipped when screen reader users navigate directly by landmarks. This deprives users of critical context about what the tool actually does.
 **Action:** Always complement `aria-labelledby` with `aria-describedby` pointing to the subtitle/subtext IDs to ensure screen reader users receive the full context of the tool when landing on the form landmark.
+
+## 2026-04-01 - [Synchronize Native UI Chrome with Custom Dark Theme]
+**Learning:** Even when a dark theme is implemented using CSS variables (like `--bg-obsidian`) for background and text colors, the browser's native UI chrome (e.g., scrollbars, default dropdown arrows, input backgrounds on some browsers, form validation popups, and the mobile browser top bar/status bar) remains blissfully unaware of the custom theme unless explicitly told. This can result in glaring white components contrasting jarringly against the dark layout, breaking immersion and sometimes presenting contrast issues.
+**Action:** Always set `color-scheme: dark;` on the `:root` pseudo-class in your main stylesheet, and include a `<meta name="theme-color" content="[YOUR_BG_COLOR]">` tag in the `<head>` of your document. This explicitly informs the browser to style its native, unthemed elements and system chrome to match the custom dark theme.
