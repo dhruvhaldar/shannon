@@ -311,7 +311,7 @@ button:active:not(:disabled) {
 }
 
 /* Form Validation Feedback */
-input:invalid {
+input:user-invalid, select:user-invalid {
     border-color: var(--error);
     outline-color: var(--error);
 }
