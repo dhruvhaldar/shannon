@@ -61,7 +61,7 @@
                     <label for="tle1"><abbr title="Two-Line Element set - Line 1">TLE Line 1</abbr> <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995" required aria-describedby="tle-hint" spellcheck="false" autocorrect="off" autocapitalize="off" style="font-family: monospace;"></label>
                     <label for="tle2"><abbr title="Two-Line Element set - Line 2">TLE Line 2</abbr> <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519" required aria-describedby="tle-hint" spellcheck="false" autocorrect="off" autocapitalize="off" style="font-family: monospace;"></label>
                     <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
-                        <button type="button" id="locate-btn" style="background: transparent; border: none; color: var(--accent-amber); cursor: pointer; padding: 0; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 4px;">
+                        <button type="button" id="locate-btn" class="text-btn">
                             <span aria-hidden="true">📍</span> Use My Location
                         </button>
                     </div>
@@ -214,8 +214,8 @@
                         <div style="display: flex; align-items: center; justify-content: space-between;">
                             <h3 style="color: ${color}; margin: 0;">${icon} Margin: ${margin.toFixed(2)} dB</h3>
                             <div style="display: flex; gap: 5px;">
-                                <button type="button" class="copy-url-btn" aria-label="Copy Link" title="Copy Link to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;"><span aria-hidden="true">🔗</span></button>
-                                <button type="button" class="copy-btn" aria-label="Copy Report" title="Copy to Clipboard" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;"><span aria-hidden="true">📋</span></button>
+                                <button type="button" class="icon-btn copy-url-btn" aria-label="Copy Link" title="Copy Link to Clipboard"><span aria-hidden="true">🔗</span></button>
+                                <button type="button" class="icon-btn copy-btn" aria-label="Copy Report" title="Copy to Clipboard"><span aria-hidden="true">📋</span></button>
                             </div>
                         </div>
                         <ul>`;

@@ -1,6 +1,7 @@
 ## 2024-03-24 - [Emoji Accessibility via innerHTML]
 **Learning:** When adding `aria-hidden="true"` spans around decorative emojis in dynamic JavaScript states (like loading buttons or copy success states), it's crucial to switch from using `.innerText` to `.innerHTML` for state management. Using `.innerText` will render the literal HTML string instead of parsing the accessibility tags, whereas `.innerHTML` correctly preserves the DOM nodes and prevents screen readers from redundantly reading out the emojis.
 **Action:** Always check the method used for DOM updates when adding accessibility tags to dynamic text. Ensure state capture (e.g., `const original = btn.innerHTML`) and restoration also use `.innerHTML`.
+
 ## 2026-03-09 - [Input Form Readability and Highlight Contrast]
 **Learning:** Dark mode interfaces with light text `var(--text-main)` demand special care regarding contrast. Form inputs need distinct boundaries (e.g. `var(--text-dim)`) to satisfy WCAG 1.4.11 Non-text Contrast, as muted borders often blend with the background. Furthermore, hardcoded light-themed highlight colors (like `#dcfce7`) for temporary active states cause severe readability issues by creating a 1:1 text-to-background contrast with light text.
 **Action:** Use distinct contrast values like `var(--text-dim)` for input borders, and always rely on alpha-blended accent colors (e.g. `rgba(255, 176, 0, 0.2)`) for temporary state highlights rather than hardcoded light/dark colors that conflict with the theme's text.
@@ -40,6 +41,7 @@
 ## 2026-03-26 - [Visual Keyboard Shortcuts]
 **Learning:** Relying solely on `aria-keyshortcuts` or `title` tooltips for keyboard shortcuts leaves the functionality undiscoverable to most users. Explicitly visualizing the shortcut using a `<span>` element bridges the gap between hidden accessibility attributes and actual user discoverability. Since the shortcut text is visually decorative and already announced by screen readers via `aria-keyshortcuts`, it should be marked with `aria-hidden="true"` to prevent redundant reading.
 **Action:** Always complement `aria-keyshortcuts` with a visible `<span aria-hidden="true">` hint within the actionable element, dynamically rendering the correct OS shortcut (e.g. ⌘ vs Ctrl).
+
 ## 2026-03-28 - Native CSS Variable Inheritance in SVG via D3
 **Learning:** When generating interactive SVG graphics dynamically using D3 or vanilla JS, using native CSS variables (e.g., `var(--success)`) within inline `.style()` or `.attr()` declarations perfectly inherits colors and supports native browser accessibility contrast without requiring manual evaluation via `getComputedStyle` or explicit theme-switch listeners.
 **Action:** Always prefer setting `var(--theme-token)` instead of hardcoded hex colors for dynamically injected SVG inline styles/attributes to guarantee dark/light mode maintainability.
@@ -51,3 +53,7 @@
 ## 2026-04-01 - [Synchronize Native UI Chrome with Custom Dark Theme]
 **Learning:** Even when a dark theme is implemented using CSS variables (like `--bg-obsidian`) for background and text colors, the browser's native UI chrome (e.g., scrollbars, default dropdown arrows, input backgrounds on some browsers, form validation popups, and the mobile browser top bar/status bar) remains blissfully unaware of the custom theme unless explicitly told. This can result in glaring white components contrasting jarringly against the dark layout, breaking immersion and sometimes presenting contrast issues.
 **Action:** Always set `color-scheme: dark;` on the `:root` pseudo-class in your main stylesheet, and include a `<meta name="theme-color" content="[YOUR_BG_COLOR]">` tag in the `<head>` of your document. This explicitly informs the browser to style its native, unthemed elements and system chrome to match the custom dark theme.
+
+## 2026-04-07 - [CSS Specificity Trap for Interactive Elements]
+**Learning:** Hardcoding generic styles inline (`style="background: transparent; border: none;"`) on interactive elements like buttons creates a severe specificity trap (1000 vs 0012) that entirely overrides global interactive CSS pseudo-classes like `:hover`. This results in components feeling dead and unresponsive.
+**Action:** Never use inline styles for interactive elements. Abstract common UI patterns into reusable CSS utility classes (e.g., `.text-btn`, `.icon-btn`) and apply those classes in HTML. This ensures pseudo-classes like `:hover` and `:active` can properly cascade and provide visual feedback.
