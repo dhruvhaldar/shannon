@@ -57,3 +57,7 @@
 ## 2026-04-07 - [CSS Specificity Trap for Interactive Elements]
 **Learning:** Hardcoding generic styles inline (`style="background: transparent; border: none;"`) on interactive elements like buttons creates a severe specificity trap (1000 vs 0012) that entirely overrides global interactive CSS pseudo-classes like `:hover`. This results in components feeling dead and unresponsive.
 **Action:** Never use inline styles for interactive elements. Abstract common UI patterns into reusable CSS utility classes (e.g., `.text-btn`, `.icon-btn`) and apply those classes in HTML. This ensures pseudo-classes like `:hover` and `:active` can properly cascade and provide visual feedback.
+
+## 2026-04-08 - [CSS Specificity Trap on Disabled Icon/Text Buttons]
+**Learning:** When a global `button:disabled` style applies background colors and borders to visually indicate a disabled state, it inadvertently overrides the transparent, borderless styling of utility classes like `.text-btn` or `.icon-btn` due to higher specificity. This causes icon and text-only buttons to jarringly render as clunky gray blocks when they are temporarily disabled (e.g., during an async operation or after copying).
+**Action:** Always explicitly define disabled states for transparent utility button classes (e.g., `button.text-btn:disabled`, `button.icon-btn:disabled`) to maintain their borderless appearance while applying an opacity reduction or color change to signify the disabled state.

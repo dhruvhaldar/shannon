@@ -331,6 +331,13 @@ button:disabled {
     opacity: 0.8;
 }
 
+button.text-btn:disabled, button.icon-btn:disabled {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    opacity: 0.5;
+}
+
 /* Domain Tooltips for Abbreviations */
 abbr[title] {
     text-decoration: underline dotted var(--text-dim);
