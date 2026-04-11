@@ -61,3 +61,7 @@
 ## 2026-04-08 - [CSS Specificity Trap on Disabled Icon/Text Buttons]
 **Learning:** When a global `button:disabled` style applies background colors and borders to visually indicate a disabled state, it inadvertently overrides the transparent, borderless styling of utility classes like `.text-btn` or `.icon-btn` due to higher specificity. This causes icon and text-only buttons to jarringly render as clunky gray blocks when they are temporarily disabled (e.g., during an async operation or after copying).
 **Action:** Always explicitly define disabled states for transparent utility button classes (e.g., `button.text-btn:disabled`, `button.icon-btn:disabled`) to maintain their borderless appearance while applying an opacity reduction or color change to signify the disabled state.
+
+## 2026-04-11 - [Dynamic Tooltips for State-Changing Buttons]
+**Learning:** When dynamically changing button text or icons to indicate success (like showing a ✅ for copy actions), leaving the original hover tooltip (e.g., 'Copy to Clipboard') creates a confusing and discordant experience. Screen readers and users hovering over the success state will be told an action that has already occurred.
+**Action:** Always temporarily update the `title` and `aria-label` attributes to match the new visual success state (e.g., 'Copied!'), and revert them alongside the icon restoration.
