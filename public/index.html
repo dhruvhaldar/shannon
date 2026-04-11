@@ -238,9 +238,20 @@
 
                         navigator.clipboard.writeText(report).then(() => {
                             const original = copyBtn.innerHTML;
+                            const originalTitle = copyBtn.getAttribute('title');
+                            const originalAriaLabel = copyBtn.getAttribute('aria-label');
                             copyBtn.innerHTML = '<span aria-hidden="true">✅</span>';
+                            copyBtn.setAttribute('title', 'Copied!');
+                            copyBtn.setAttribute('aria-label', 'Copied!');
                             copyBtn.disabled = true;
-                            setTimeout(() => { copyBtn.innerHTML = original; copyBtn.disabled = false; }, 2000);
+                            setTimeout(() => {
+                                copyBtn.innerHTML = original;
+                                if (originalTitle) copyBtn.setAttribute('title', originalTitle);
+                                else copyBtn.removeAttribute('title');
+                                if (originalAriaLabel) copyBtn.setAttribute('aria-label', originalAriaLabel);
+                                else copyBtn.removeAttribute('aria-label');
+                                copyBtn.disabled = false;
+                            }, 2000);
                             announceA11y("Copied to clipboard.");
                         }).catch(err => {
                             console.error('Copy failed:', err);
@@ -259,9 +270,20 @@
                         const url = window.location.href;
                         navigator.clipboard.writeText(url).then(() => {
                             const original = copyUrlBtn.innerHTML;
+                            const originalTitle = copyUrlBtn.getAttribute('title');
+                            const originalAriaLabel = copyUrlBtn.getAttribute('aria-label');
                             copyUrlBtn.innerHTML = '<span aria-hidden="true">✅</span>';
+                            copyUrlBtn.setAttribute('title', 'Link Copied!');
+                            copyUrlBtn.setAttribute('aria-label', 'Link Copied!');
                             copyUrlBtn.disabled = true;
-                            setTimeout(() => { copyUrlBtn.innerHTML = original; copyUrlBtn.disabled = false; }, 2000);
+                            setTimeout(() => {
+                                copyUrlBtn.innerHTML = original;
+                                if (originalTitle) copyUrlBtn.setAttribute('title', originalTitle);
+                                else copyUrlBtn.removeAttribute('title');
+                                if (originalAriaLabel) copyUrlBtn.setAttribute('aria-label', originalAriaLabel);
+                                else copyUrlBtn.removeAttribute('aria-label');
+                                copyUrlBtn.disabled = false;
+                            }, 2000);
                             announceA11y("Copied to clipboard.");
                         }).catch(err => {
                             console.error('Copy failed:', err);
