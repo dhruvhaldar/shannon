@@ -58,8 +58,8 @@
                 <p id="pass-predict-desc" class="panel-subtext">Predict the path of a satellite across the local sky for antenna tracking.</p>
                 <form id="pass-form" aria-labelledby="pass-predict-heading" aria-describedby="pass-predict-desc">
                     <p id="tle-hint" style="font-size: 0.9rem; color: var(--text-dim); margin: 0;"><span aria-hidden="true">✨</span> <strong>Tip:</strong> Paste a full TLE set to auto-fill</p>
-                    <label for="tle1"><abbr title="Two-Line Element set - Line 1">TLE Line 1</abbr> <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995" required aria-describedby="tle-hint" spellcheck="false" autocorrect="off" autocapitalize="off" style="font-family: monospace;"></label>
-                    <label for="tle2"><abbr title="Two-Line Element set - Line 2">TLE Line 2</abbr> <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519" required aria-describedby="tle-hint" spellcheck="false" autocorrect="off" autocapitalize="off" style="font-family: monospace;"></label>
+                    <label for="tle1"><span><abbr title="Two-Line Element set - Line 1">TLE Line 1</abbr><small id="tle1-count"></small></span> <input type="text" id="tle1" value="1 33591U 09005A   20265.56828552  .00000055  00000-0  57632-4 0  9995" required maxlength="69" minlength="69" pattern="^.{69}$" title="TLE line must be exactly 69 characters" aria-describedby="tle-hint tle1-count" spellcheck="false" autocorrect="off" autocapitalize="off" style="font-family: monospace;"></label>
+                    <label for="tle2"><span><abbr title="Two-Line Element set - Line 2">TLE Line 2</abbr><small id="tle2-count"></small></span> <input type="text" id="tle2" value="2 33591  99.1989 123.6338 0013952 147.2885 212.9238 14.12351659595519" required maxlength="69" minlength="69" pattern="^.{69}$" title="TLE line must be exactly 69 characters" aria-describedby="tle-hint tle2-count" spellcheck="false" autocorrect="off" autocapitalize="off" style="font-family: monospace;"></label>
                     <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
                         <button type="button" id="locate-btn" class="text-btn">
                             <span aria-hidden="true">📍</span> Use My Location
@@ -663,6 +663,27 @@
                 document.activeElement.blur();
             }
         });
+
+        function attachCharCount(inputId, countId) {
+            const input = document.getElementById(inputId);
+            const count = document.getElementById(countId);
+            if (!input || !count) return;
+            const update = () => {
+                const len = input.value.length;
+                count.textContent = ` ${len}/69`;
+                if (len !== 69) {
+                    count.style.color = 'var(--error)';
+                    input.setCustomValidity('TLE line must be exactly 69 characters');
+                } else {
+                    count.style.color = 'var(--text-dim)';
+                    input.setCustomValidity('');
+                }
+            };
+            input.addEventListener('input', update);
+            update(); // Initial call
+        }
+        attachCharCount('tle1', 'tle1-count');
+        attachCharCount('tle2', 'tle2-count');
 
         // Auto-select input text on focus for faster data entry in pre-filled forms
         document.querySelectorAll('input').forEach(input => {

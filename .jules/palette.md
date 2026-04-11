@@ -65,3 +65,7 @@
 ## 2026-04-11 - [Dynamic Tooltips for State-Changing Buttons]
 **Learning:** When dynamically changing button text or icons to indicate success (like showing a ✅ for copy actions), leaving the original hover tooltip (e.g., 'Copy to Clipboard') creates a confusing and discordant experience. Screen readers and users hovering over the success state will be told an action that has already occurred.
 **Action:** Always temporarily update the `title` and `aria-label` attributes to match the new visual success state (e.g., 'Copied!'), and revert them alongside the icon restoration.
+
+## 2026-03-05 - Strict Length Validation for TLE Inputs
+**Learning:** Highly-structured, fixed-format technical strings (like TLEs) require explicit character count indicators and strict length validation. Without them, users can accidentally add or remove spaces (especially when copying/pasting), which breaks column-based parsing on the backend while looking correct at a glance.
+**Action:** When implementing inputs for strict positional formats (like TLEs), always add a visual character counter, set strict `maxlength`/`minlength` attributes, and use `setCustomValidity` to provide immediate feedback when the format length is incorrect.
