@@ -107,19 +107,19 @@ class GroundStation:
             visible = u > 0
 
             if not np.any(visible):
-                # Optimization: np.empty_like().fill() is faster than np.full_like()
-                # because it avoids the overhead of internal array setup in np.full_like.
-                nan_arr = np.empty_like(u)
+                # Optimization: np.empty(shape, dtype).fill() is faster than np.empty_like()
+                # and np.full_like() because it avoids the overhead of internal array setup.
+                nan_arr = np.empty(u.shape, dtype=u.dtype)
                 nan_arr.fill(np.nan)
                 return nan_arr, nan_arr, nan_arr
 
             # Initialize results with NaNs
-            # Optimization: np.empty_like().fill() is faster than np.full_like()
-            az = np.empty_like(u)
+            # Optimization: np.empty(shape, dtype).fill() is faster than np.empty_like()
+            az = np.empty(u.shape, dtype=u.dtype)
             az.fill(np.nan)
-            el = np.empty_like(u)
+            el = np.empty(u.shape, dtype=u.dtype)
             el.fill(np.nan)
-            range_km = np.empty_like(u)
+            range_km = np.empty(u.shape, dtype=u.dtype)
             range_km.fill(np.nan)
 
             # For visible points, we MUST do the full ECEF conversion to get Azimuth and Range
@@ -143,13 +143,14 @@ class GroundStation:
             # Optimization: explicit multiplication (x*x) avoids the overhead of np.power(x, 2) allocation (~25% speedup)
             range_km_vis = np.sqrt(rx_x_vis*rx_x_vis + rx_y_vis*rx_y_vis + rx_z_vis*rx_z_vis)
 
-            # Optimization: Pre-allocate target arrays and use in-place addition to avoid intermediate array allocations
-            e_vis = np.empty_like(rx_x_vis)
+            # Optimization: Pre-allocate target arrays and use in-place addition to avoid intermediate array allocations.
+            # Using np.empty(shape, dtype) avoids np.empty_like overhead.
+            e_vis = np.empty(rx_x_vis.shape, dtype=rx_x_vis.dtype)
             np.multiply(rx_x_vis, self.R[0, 0], out=e_vis)
             e_vis += rx_y_vis * self.R[0, 1]
             e_vis += rx_z_vis * self.R[0, 2]
 
-            n_vis = np.empty_like(rx_x_vis)
+            n_vis = np.empty(rx_x_vis.shape, dtype=rx_x_vis.dtype)
             np.multiply(rx_x_vis, self.R[1, 0], out=n_vis)
             n_vis += rx_y_vis * self.R[1, 1]
             n_vis += rx_z_vis * self.R[1, 2]
