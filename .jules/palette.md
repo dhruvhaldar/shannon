@@ -69,3 +69,7 @@
 ## 2026-03-05 - Strict Length Validation for TLE Inputs
 **Learning:** Highly-structured, fixed-format technical strings (like TLEs) require explicit character count indicators and strict length validation. Without them, users can accidentally add or remove spaces (especially when copying/pasting), which breaks column-based parsing on the backend while looking correct at a glance.
 **Action:** When implementing inputs for strict positional formats (like TLEs), always add a visual character counter, set strict `maxlength`/`minlength` attributes, and use `setCustomValidity` to provide immediate feedback when the format length is incorrect.
+
+## 2026-04-17 - [Provide Semantic Text Backup for Color/Icon State Indicators]
+**Learning:** Relying solely on text color (e.g., green for pass, red for fail) and `aria-hidden` icons to communicate the status of a result violates WCAG SC 1.4.1 (Use of Color). Screen reader users will only hear the numeric value without knowing the contextual pass/fail status if it's only conveyed visually.
+**Action:** Always provide a semantic, visually hidden text backup (e.g., `<span class="sr-only">(Pass)</span>`) alongside color changes and decorative icons to ensure the state or status is fully communicated to assistive technologies.
