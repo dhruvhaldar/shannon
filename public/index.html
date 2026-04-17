@@ -207,7 +207,7 @@
                 const margin = result.margin_db;
                 const isPositive = margin >= 0;
                 const color = isPositive ? 'var(--success)' : 'var(--error)';
-                const icon = isPositive ? '<span aria-hidden="true">✅</span>' : '<span aria-hidden="true">❌</span>';
+                const icon = isPositive ? '<span aria-hidden="true">✅</span><span class="sr-only"> (Pass)</span>' : '<span aria-hidden="true">❌</span><span class="sr-only"> (Fail)</span>';
 
                 let html = `
                     <div class="result-card ${isPositive ? 'success' : 'error'}">
