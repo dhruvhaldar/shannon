@@ -146,7 +146,7 @@
             // Use DOMParser to escape any raw HTML strings in message for safety
             const escaped = new Option(message).innerHTML;
             return `<div class="error-alert" role="alert" aria-live="assertive">
-                <span aria-hidden="true">⚠️</span>
+                <span aria-hidden="true">⚠️</span><span class="sr-only">Error: </span>
                 <span>${escaped}</span>
             </div>`;
         }
@@ -208,11 +208,12 @@
                 const isPositive = margin >= 0;
                 const color = isPositive ? 'var(--success)' : 'var(--error)';
                 const icon = isPositive ? '<span aria-hidden="true">✅</span>' : '<span aria-hidden="true">❌</span>';
+                const srText = isPositive ? '<span class="sr-only">(Pass)</span>' : '<span class="sr-only">(Fail)</span>';
 
                 let html = `
                     <div class="result-card ${isPositive ? 'success' : 'error'}">
                         <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <h3 style="color: ${color}; margin: 0;">${icon} Margin: ${margin.toFixed(2)} dB</h3>
+                            <h3 style="color: ${color}; margin: 0;">${icon} ${srText} Margin: ${margin.toFixed(2)} dB</h3>
                             <div style="display: flex; gap: 5px;">
                                 <button type="button" class="icon-btn copy-url-btn" aria-label="Copy Link" title="Copy Link to Clipboard"><span aria-hidden="true">🔗</span></button>
                                 <button type="button" class="icon-btn copy-btn" aria-label="Copy Report" title="Copy to Clipboard"><span aria-hidden="true">📋</span></button>
