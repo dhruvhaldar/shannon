@@ -69,3 +69,7 @@
 ## 2026-03-05 - Strict Length Validation for TLE Inputs
 **Learning:** Highly-structured, fixed-format technical strings (like TLEs) require explicit character count indicators and strict length validation. Without them, users can accidentally add or remove spaces (especially when copying/pasting), which breaks column-based parsing on the backend while looking correct at a glance.
 **Action:** When implementing inputs for strict positional formats (like TLEs), always add a visual character counter, set strict `maxlength`/`minlength` attributes, and use `setCustomValidity` to provide immediate feedback when the format length is incorrect.
+
+## 2026-05-04 - [Group Auxiliary Elements in Grid Labels]
+**Learning:** When using `display: grid` on a `<label>` to align its contents (e.g., text vs input field), adding auxiliary elements like a `<small>` text helper directly inside the `<label>` breaks the column layout. The grid treats the new element as an independent grid item, misaligning the input field and text.
+**Action:** Always wrap the primary label text and any auxiliary helpers within a `<span>` element when inside a grid layout to maintain the intended column structure.
