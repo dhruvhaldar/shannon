@@ -519,6 +519,8 @@
 
                 tle1Input.value = line1;
                 tle2Input.value = line2;
+                tle1Input.dispatchEvent(new Event('input'));
+                tle2Input.dispatchEvent(new Event('input'));
 
                 highlightInputs([tle1Input, tle2Input]);
                 announceA11y("TLE data pasted and autofilled.");
@@ -552,8 +554,12 @@
 
                         latInput.value = position.coords.latitude.toFixed(4);
                         lonInput.value = position.coords.longitude.toFixed(4);
+                        latInput.dispatchEvent(new Event('input'));
+                        lonInput.dispatchEvent(new Event('input'));
+
                         if (position.coords.altitude !== null) {
                             altInput.value = position.coords.altitude.toFixed(1);
+                            altInput.dispatchEvent(new Event('input'));
                             highlightInputs([latInput, lonInput, altInput]);
                         } else {
                             highlightInputs([latInput, lonInput]);

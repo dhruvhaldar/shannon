@@ -73,3 +73,7 @@
 ## 2026-05-04 - [Group Auxiliary Elements in Grid Labels]
 **Learning:** When using `display: grid` on a `<label>` to align its contents (e.g., text vs input field), adding auxiliary elements like a `<small>` text helper directly inside the `<label>` breaks the column layout. The grid treats the new element as an independent grid item, misaligning the input field and text.
 **Action:** Always wrap the primary label text and any auxiliary helpers within a `<span>` element when inside a grid layout to maintain the intended column structure.
+
+## 2026-05-04 - [Manual Input Events for Programmatic Value Changes]
+**Learning:** When programmatically changing an `input` element's `.value` in JavaScript (e.g., via paste handlers, geolocation callbacks, or preset selections), the browser's native `input` event is not automatically fired. This causes UX helpers attached to these events (such as character counters or validation logic) to become desynchronized from the actual value displayed.
+**Action:** Always manually call `element.dispatchEvent(new Event('input'))` immediately after programmatically setting `.value` to ensure all bound event listeners and visual helpers correctly update.
