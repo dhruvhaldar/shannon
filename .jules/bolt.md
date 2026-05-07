@@ -114,3 +114,11 @@
 ## 2026-05-06 - FastAPI GzipMiddleware Increased Latency for JSON
 **Learning:** Adding `GZipMiddleware` to the FastAPI backend surprisingly *increased* the response time for a 2MB JSON payload (from ~0.48s to ~0.88s locally) while barely reducing the content length on the wire when tested via requests. This suggests that the CPU overhead of compressing high-entropy numerical float data on-the-fly outweighs the network transfer savings on local or high-bandwidth connections, making it a poor default optimization for this specific data structure.
 **Action:** Always measure compression overhead vs transfer savings. Prefer data structure optimizations (like flattening arrays) over blind middleware compression for dense numerical JSON payloads.
+
+## 2026-05-18 - NumPy In-Place Addition for Square Roots
+**Learning:** When calculating formulas like `np.sqrt(x*x + y*y + z*z)` on large NumPy arrays, `numpy` creates a temporary intermediate array for each arithmetic operation (`x*x`, `y*y`, the sums). This causes excessive memory bandwidth overhead (which is often the bottleneck in numerical codes).
+**Action:** Use pre-allocated arrays and in-place addition (`+=`) to combine terms before passing the buffer to `np.sqrt(..., out=buffer)`. For example, `r = x*x; r += y*y; r += z*z; np.sqrt(r, out=r)`. This safely avoids creating intermediate arrays and provides a ~33% speedup on coordinate distance calculations.
+
+## 2026-05-18 - Avoid Lossy Precision Modifications for Performance
+**Learning:** Attempting to shrink JSON payload sizes by rounding float arrays (`np.round(..., 4)`) for signal data introduces quantization noise and constitutes a breaking change for downstream RF signal processing, even if it halves the network transfer time.
+**Action:** Never optimize floating-point precision down without explicit domain knowledge that the precision loss is safe.
