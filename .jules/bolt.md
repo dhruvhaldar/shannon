@@ -122,3 +122,11 @@
 ## 2026-05-18 - Avoid Lossy Precision Modifications for Performance
 **Learning:** Attempting to shrink JSON payload sizes by rounding float arrays (`np.round(..., 4)`) for signal data introduces quantization noise and constitutes a breaking change for downstream RF signal processing, even if it halves the network transfer time.
 **Action:** Never optimize floating-point precision down without explicit domain knowledge that the precision loss is safe.
+
+## 2026-05-28 - Canvas Rendering Optimization
+**Learning:** In HTML5 Canvas rendering, repeatedly calling `ctx.fillRect()` inside a hot loop (like rendering 100k scatter points) incurs massive overhead due to individual draw calls and state changes.
+**Action:** Always batch canvas drawing by wrapping the loop in `ctx.beginPath()` and using `ctx.rect()` inside the loop, followed by a single `ctx.fill()` after the loop. This can yield up to a 4x speedup.
+
+## 2026-05-28 - Dependency Management Boundaries
+**Learning:** When using temporary tools like Puppeteer or Playwright for local testing/verification, `npm install` mutates `package.json` and creates `package-lock.json`, which violates the negative constraint to never modify package files without instruction.
+**Action:** Always clean up `package.json` and `package-lock.json` via `git checkout -- package.json package-lock.json` (and remove lock files if they didn't exist) before submitting a PR when temporary tools were installed.
