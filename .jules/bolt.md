@@ -130,3 +130,6 @@
 ## 2026-05-28 - Dependency Management Boundaries
 **Learning:** When using temporary tools like Puppeteer or Playwright for local testing/verification, `npm install` mutates `package.json` and creates `package-lock.json`, which violates the negative constraint to never modify package files without instruction.
 **Action:** Always clean up `package.json` and `package-lock.json` via `git checkout -- package.json package-lock.json` (and remove lock files if they didn't exist) before submitting a PR when temporary tools were installed.
+## 2026-05-30 - Optimize timedelta creation in hot loops
+**Learning:** Instantiating `datetime.timedelta` objects inside a hot loop (e.g., `datetime.timedelta(seconds=step_seconds * i)`) incurs significant overhead. Multiplying a pre-existing `timedelta` object by an integer is mathematically equivalent but much faster because it avoids repeated constructor calls and argument parsing.
+**Action:** Always pre-calculate a base `timedelta` object outside of loops and multiply it by the loop index or multiplier when generating evenly spaced time series data.
