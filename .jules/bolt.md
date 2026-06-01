@@ -133,3 +133,7 @@
 ## 2026-05-30 - Optimize timedelta creation in hot loops
 **Learning:** Instantiating `datetime.timedelta` objects inside a hot loop (e.g., `datetime.timedelta(seconds=step_seconds * i)`) incurs significant overhead. Multiplying a pre-existing `timedelta` object by an integer is mathematically equivalent but much faster because it avoids repeated constructor calls and argument parsing.
 **Action:** Always pre-calculate a base `timedelta` object outside of loops and multiply it by the loop index or multiplier when generating evenly spaced time series data.
+## $(date +%Y-%m-%d) - Faster GMST Array Modulo
+
+**Learning:** When calculating Greenwich Mean Sidereal Time (GMST) for an entire numpy array (like an array of fraction-of-day offsets), operations like array multiplication, addition, and particularly modulo (`%`) cause significant memory allocation overhead. The native numpy modulo (`arr %= 360.0`) uses `np.fmod` which is comparatively slow. By utilizing the `fr` array input natively, chaining operations with `+=` and `*=`, and implementing the modulo operation via floor (`np.divide`, `np.floor(out=)`, `*=`, `-=`), we avoided several intermediate array allocations.
+**Action:** Always prefer in-place operations (`*=`, `+=`, `np.divide`, `np.floor(out=...)`) over allocating new arrays for intermediate math on large floating point arrays in hot loops, and avoid using the native modulo operator `%` for arrays if maximum performance is needed.
