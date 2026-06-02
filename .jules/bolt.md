@@ -133,3 +133,7 @@
 ## 2026-05-30 - Optimize timedelta creation in hot loops
 **Learning:** Instantiating `datetime.timedelta` objects inside a hot loop (e.g., `datetime.timedelta(seconds=step_seconds * i)`) incurs significant overhead. Multiplying a pre-existing `timedelta` object by an integer is mathematically equivalent but much faster because it avoids repeated constructor calls and argument parsing.
 **Action:** Always pre-calculate a base `timedelta` object outside of loops and multiply it by the loop index or multiplier when generating evenly spaced time series data.
+
+## 2026-06-02 - Floating-Point Modulo Sequence Optimization
+**Learning:** In NumPy, when performing floating-point modulo operations (like modulo 360) on large arrays, a common optimization is `arr -= 360.0 * np.floor(arr / 360.0)` which is faster than the native `arr %= 360.0`. However, doing it this way creates intermediate arrays for division, flooring, and multiplication. Using a sequence of in-place operations (`temp = np.divide(arr, 360.0); np.floor(temp, out=temp); temp *= 360.0; arr -= temp`) avoids these intermediate allocations, doubling the speed compared to the `arr -= 360.0 * np.floor(arr / 360.0)` approach for large arrays.
+**Action:** When performing modulo operations on large floating point arrays, break the operation into intermediate steps using `np.divide`, `np.floor` with `out` parameters, and in-place updates (`*=`, `-=`) to minimize array memory allocation overhead.
