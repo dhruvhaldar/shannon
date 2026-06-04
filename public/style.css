@@ -365,3 +365,9 @@ footer a:hover {
     text-shadow: 0 0 8px rgba(255, 176, 0, 0.4);
 }
 
+
+/* Add visual indicator for required form fields */
+label:has(:required) > :first-child::after {
+    content: " *" / "";
+    color: var(--error);
+}
