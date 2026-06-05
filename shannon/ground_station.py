@@ -159,15 +159,17 @@ class GroundStation:
             n_vis += rx_y_vis * self.R[1, 1]
             n_vis += rx_z_vis * self.R[1, 2]
 
-            # Optimization: Explicit multiplication by (180.0 / np.pi) avoids the overhead
+            # Optimization: use in-place arctan2 and in-place addition with where clause
+            # to avoid intermediate allocations and boolean indexing overhead.
+            # Explicit multiplication by (180.0 / np.pi) avoids the overhead
             # of the np.degrees ufunc allocation, yielding a ~40% speedup for large arrays.
-            # Using in-place multiplication (*=) avoids another temporary array allocation.
-            az_vis = np.arctan2(e_vis, n_vis)
+            az_vis = np.arctan2(e_vis, n_vis, out=e_vis)
             az_vis *= (180.0 / np.pi)
-            # Optimization: in-place boolean masking is ~15x faster than np.where
-            # for conditional updates since it avoids allocating a new array.
-            az_vis[az_vis < 0] += 360.0
-            el_vis = np.arcsin(u_vis / range_km_vis)
+            np.add(az_vis, 360.0, out=az_vis, where=az_vis < 0)
+
+            # Optimization: use in-place division and in-place arcsin to avoid allocating temporary arrays
+            np.divide(u_vis, range_km_vis, out=u_vis)
+            el_vis = np.arcsin(u_vis, out=u_vis)
             el_vis *= (180.0 / np.pi)
 
             az[visible] = az_vis
@@ -193,17 +195,21 @@ class GroundStation:
         e = rx_x * self.R[0, 0] + rx_y * self.R[0, 1] + rx_z * self.R[0, 2]
         n = rx_x * self.R[1, 0] + rx_y * self.R[1, 1] + rx_z * self.R[1, 2]
 
-        az = np.arctan2(e, n) * (180.0 / np.pi)
-
-        if np.ndim(az) == 0:
+        if np.ndim(e) == 0:
+            az = np.arctan2(e, n) * (180.0 / np.pi)
             if az < 0:
                 az += 360.0
+            el = np.arcsin(u / range_km) * (180.0 / np.pi)
         else:
-            # Optimization: in-place boolean masking is ~15x faster than np.where
-            # for conditional updates since it avoids allocating a new array.
-            az[az < 0] += 360.0
+            az = np.arctan2(e, n, out=e)
+            az *= (180.0 / np.pi)
+            # Optimization: using np.add with out and where parameters avoids the overhead
+            # of evaluating and indexing the boolean mask array completely.
+            np.add(az, 360.0, out=az, where=az < 0)
 
-        el = np.arcsin(u / range_km) * (180.0 / np.pi)
+            np.divide(u, range_km, out=u)
+            el = np.arcsin(u, out=u)
+            el *= (180.0 / np.pi)
 
         if mask_invisible:
              # Apply mask at the end for scalar/legacy path
