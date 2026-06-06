@@ -42,7 +42,7 @@ header {
 
 header h1 {
     margin: 0;
-    font-size: 4rem;
+    font-size: clamp(2rem, 10vw, 4rem);
     letter-spacing: 4px;
     background: linear-gradient(to right, var(--accent-amber), #ff8c00);
     -webkit-background-clip: text;
@@ -61,7 +61,7 @@ header p {
 
 .dashboard {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
     gap: 20px;
 }
 
@@ -188,6 +188,7 @@ button:active:not(:disabled) {
     padding: 15px;
     box-sizing: border-box;
     max-width: 100%;
+    height: auto;
 }
 
 .pass-info-card {
@@ -370,4 +371,12 @@ footer a:hover {
 label:has(:required) > :first-child::after {
     content: " *" / "";
     color: var(--error);
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 480px) {
+    form > label {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
 }
