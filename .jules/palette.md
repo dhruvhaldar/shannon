@@ -77,3 +77,7 @@
 ## 2026-05-04 - [Manual Input Events for Programmatic Value Changes]
 **Learning:** When programmatically changing an `input` element's `.value` in JavaScript (e.g., via paste handlers, geolocation callbacks, or preset selections), the browser's native `input` event is not automatically fired. This causes UX helpers attached to these events (such as character counters or validation logic) to become desynchronized from the actual value displayed.
 **Action:** Always manually call `element.dispatchEvent(new Event('input'))` immediately after programmatically setting `.value` to ensure all bound event listeners and visual helpers correctly update.
+
+## 2026-06-06 - [Responsive Grids and Prevent Horizontal Scroll]
+**Learning:** Hardcoding minimum column widths in CSS grids (e.g., `minmax(350px, 1fr)`) or fixed widths on elements without boundary limits (e.g., `width: 300px`) causes severe horizontal scrolling issues on narrow viewports like mobile screens (e.g., 320px). This breaks the mobile layout and makes interactions difficult.
+**Action:** Always wrap fixed minimum widths in a `min(100%, ...)` function (e.g., `minmax(min(100%, 350px), 1fr)`) and replace strict widths with `width: 100%; max-width: 300px;` to ensure elements scale down gracefully and prevent viewport overflow on small devices.
