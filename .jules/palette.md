@@ -81,3 +81,7 @@
 ## 2026-06-06 - [Responsive Grids and Prevent Horizontal Scroll]
 **Learning:** Hardcoding minimum column widths in CSS grids (e.g., `minmax(350px, 1fr)`) or fixed widths on elements without boundary limits (e.g., `width: 300px`) causes severe horizontal scrolling issues on narrow viewports like mobile screens (e.g., 320px). This breaks the mobile layout and makes interactions difficult.
 **Action:** Always wrap fixed minimum widths in a `min(100%, ...)` function (e.g., `minmax(min(100%, 350px), 1fr)`) and replace strict widths with `width: 100%; max-width: 300px;` to ensure elements scale down gracefully and prevent viewport overflow on small devices.
+
+## 2026-06-16 - [Global prefers-reduced-motion Coverage in CSS]
+**Learning:** While `prefers-reduced-motion` can be handled for custom WebGL/Canvas rendering in JavaScript, CSS transitions and animations (like spinning loading indicators, hover states, button transformations) will bypass JavaScript checks entirely. Leaving these untouched means users who specifically request reduced motion will still experience motion sickness from basic UI interactions.
+**Action:** Always include a global CSS media query `@media (prefers-reduced-motion: reduce)` that effectively disables CSS animations, transitions, and smooth scrolling globally by setting their durations to essentially zero (`0.01ms`), ensuring an accessible experience across all layers of the application.
