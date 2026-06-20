@@ -138,9 +138,16 @@ class GroundStation:
             sat_y_vis = sat_y[visible]
             sat_z_vis = sat_z[visible]
 
-            # Optimization: directly compute rx_*_vis in a single expression to avoid intermediate sat_ecef_*_vis array allocations
-            rx_x_vis = sat_x_vis * cos_g_vis + sat_y_vis * sin_g_vis - self.location[0]
-            rx_y_vis = -sat_x_vis * sin_g_vis + sat_y_vis * cos_g_vis - self.location[1]
+            # Optimization: directly compute rx_*_vis using in-place operations
+            # to avoid intermediate array allocations and improve memory bandwidth.
+            rx_x_vis = sat_x_vis * cos_g_vis
+            rx_x_vis += sat_y_vis * sin_g_vis
+            rx_x_vis -= self.location[0]
+
+            rx_y_vis = sat_y_vis * cos_g_vis
+            rx_y_vis -= sat_x_vis * sin_g_vis
+            rx_y_vis -= self.location[1]
+
             rx_z_vis = sat_z_vis - self.location[2]
 
             u_vis = u[visible]

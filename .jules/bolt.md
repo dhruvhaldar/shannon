@@ -154,3 +154,7 @@
 ## 2026-06-10 - Avoiding Multiple Intermediate Array Allocations
 **Learning:** In NumPy, a line like `u = sat_x * term_x + sat_y * term_y + sat_z * Uz - self.C_up` executed on large vectors will allocate several intermediate arrays (for the multiplications and sums). This increases memory bandwidth usage.
 **Action:** Replace multiple operations on large arrays with an explicitly pre-allocated target array and subsequent in-place updates (e.g. `np.multiply(a, b, out=u); u += c * d;`). This significantly reduces memory allocations and can yield a ~25-30% speedup on those specific lines.
+
+## 2026-06-11 - Coordinate Transformation In-Place Optimization
+**Learning:** In NumPy, combining multiple arithmetic operations into single line evaluations (e.g. `rx_x_vis = sat_x_vis * cos_g_vis + sat_y_vis * sin_g_vis - self.location[0]`) can sometimes allocate multiple temporary intermediate arrays for each math operator, despite the optimization intent. Breaking this down into sequential in-place updates (e.g., `rx_x_vis = sat_x_vis * cos_g_vis; rx_x_vis += sat_y_vis * sin_g_vis; rx_x_vis -= self.location[0]`) minimizes temporary array creation and noticeably speeds up coordinate transforms on large vectors.
+**Action:** When performing dense vector math across large NumPy arrays, break down complex single-line expressions into a series of in-place assignment operators (`+=`, `-=`, `*=`) to reuse the initially allocated array buffer and conserve memory bandwidth.
