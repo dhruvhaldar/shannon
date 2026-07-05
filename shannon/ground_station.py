@@ -98,8 +98,12 @@ class GroundStation:
             # Rotate U_ecef to U_eci frame (inverse rotation of ECI->ECEF)
             # This allows dot product in ECI frame.
             # term_x and term_y are time-dependent components of U_eci
-            term_x = Ux * cos_g - Uy * sin_g
-            term_y = Ux * sin_g + Uy * cos_g
+            # Optimization: breaking down complex arithmetic operations into in-place
+            # steps avoids multiple temporary array allocations and reduces memory bandwidth overhead
+            term_x = Ux * cos_g
+            term_x -= Uy * sin_g
+            term_y = Ux * sin_g
+            term_y += Uy * cos_g
 
             # Calculate u directly
             # Optimization: Use in-place operations to avoid multiple intermediate array allocations.
@@ -291,8 +295,12 @@ class GroundStation:
         cos_g = np.cos(gmst)
         sin_g = np.sin(gmst)
 
-        x_ecef = x * cos_g + y * sin_g
-        y_ecef = -x * sin_g + y * cos_g
+        # Optimization: breaking down complex arithmetic operations into in-place
+        # steps avoids multiple temporary array allocations and reduces memory bandwidth overhead
+        x_ecef = x * cos_g
+        x_ecef += y * sin_g
+        y_ecef = y * cos_g
+        y_ecef -= x * sin_g
         z_ecef = z
 
         return x_ecef, y_ecef, z_ecef
