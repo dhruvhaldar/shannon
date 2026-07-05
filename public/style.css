@@ -392,3 +392,14 @@ label:has(:required) > :first-child::after {
     scroll-behavior: auto !important;
   }
 }
+
+/* Hide native spin buttons on number inputs for scientific/large range values */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
