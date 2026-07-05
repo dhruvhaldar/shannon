@@ -85,3 +85,7 @@
 ## 2026-06-16 - [Global prefers-reduced-motion Coverage in CSS]
 **Learning:** While `prefers-reduced-motion` can be handled for custom WebGL/Canvas rendering in JavaScript, CSS transitions and animations (like spinning loading indicators, hover states, button transformations) will bypass JavaScript checks entirely. Leaving these untouched means users who specifically request reduced motion will still experience motion sickness from basic UI interactions.
 **Action:** Always include a global CSS media query `@media (prefers-reduced-motion: reduce)` that effectively disables CSS animations, transitions, and smooth scrolling globally by setting their durations to essentially zero (`0.01ms`), ensuring an accessible experience across all layers of the application.
+
+## 2026-07-05 - [Hide Native Spin Buttons on Scientific Number Inputs]
+**Learning:** For scientific applications with inputs expecting extremely large, high-variance numbers (like 2.4GHz frequencies or 35,786km distances), the browser's native spin buttons (up/down arrows inside `input[type="number"]`) are practically useless and only add UI clutter. Incrementing 2.4 billion by 1 via a tiny arrow is never a user's intended action.
+**Action:** Always hide the native spin buttons on `input[type="number"]` using `::-webkit-inner-spin-button`, `::-webkit-outer-spin-button`, and `-moz-appearance: textfield` for applications dominated by scientific or high-variance data entry.
