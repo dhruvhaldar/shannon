@@ -163,15 +163,15 @@ class GroundStation:
             range_km_vis += rx_z_vis * rx_z_vis
             np.sqrt(range_km_vis, out=range_km_vis)
 
-            # Optimization: Pre-allocate target arrays and use in-place addition to avoid intermediate array allocations.
-            # Using np.empty(shape, dtype) avoids np.empty_like overhead.
-            e_vis = np.empty(rx_x_vis.shape, dtype=rx_x_vis.dtype)
-            np.multiply(rx_x_vis, self.R[0, 0], out=e_vis)
+            # Optimization: Safely initialize the target array with the first mathematical operation
+            # rather than using np.empty with a fixed dtype, avoiding potential type-casting bugs while
+            # enabling NumPy's automatic type promotion. Follow up with in-place operations to avoid
+            # intermediate array allocations.
+            e_vis = rx_x_vis * self.R[0, 0]
             e_vis += rx_y_vis * self.R[0, 1]
             e_vis += rx_z_vis * self.R[0, 2]
 
-            n_vis = np.empty(rx_x_vis.shape, dtype=rx_x_vis.dtype)
-            np.multiply(rx_x_vis, self.R[1, 0], out=n_vis)
+            n_vis = rx_x_vis * self.R[1, 0]
             n_vis += rx_y_vis * self.R[1, 1]
             n_vis += rx_z_vis * self.R[1, 2]
 
