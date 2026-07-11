@@ -89,3 +89,7 @@
 ## 2026-07-05 - [Hide Native Spin Buttons on Scientific Number Inputs]
 **Learning:** For scientific applications with inputs expecting extremely large, high-variance numbers (like 2.4GHz frequencies or 35,786km distances), the browser's native spin buttons (up/down arrows inside `input[type="number"]`) are practically useless and only add UI clutter. Incrementing 2.4 billion by 1 via a tiny arrow is never a user's intended action.
 **Action:** Always hide the native spin buttons on `input[type="number"]` using `::-webkit-inner-spin-button`, `::-webkit-outer-spin-button`, and `-moz-appearance: textfield` for applications dominated by scientific or high-variance data entry.
+
+## 2024-11-20 - [Avoid Relying on Color Alone for Link Distinguishability]
+**Learning:** Footer links or other inline links that rely solely on color to distinguish themselves from surrounding text (e.g., without an underline) fail WCAG 1.4.1 (Use of Color) when the contrast ratio between the link text and surrounding text is less than 3:1. In this case, the amber link (`#ffb000`) had only a 1.67:1 contrast with the dim text (`#8b949e`), making it hard for users with color vision deficiencies to identify the links.
+**Action:** Always provide a visual cue other than color, such as `text-decoration: underline;`, for inline links to distinguish them from surrounding text, especially when contrast ratios fall below 3:1.

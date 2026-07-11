@@ -357,7 +357,8 @@ footer {
 
 footer a {
     color: var(--accent-amber);
-    text-decoration: none;
+    text-decoration: underline;
+    text-underline-offset: 3px;
     transition: color 0.2s, text-shadow 0.2s;
 }
 
